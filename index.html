@@ -1,0 +1,4253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Collegiate T&F Rankings</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800&family=Barlow:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<style>
+/* ========== RESET & ROOT ========== */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  /* Arkansas Red & White Color Scheme */
+  --bg:          #ffffff;         /* White background */
+  --surface:     #f8f9fa;         /* Light gray for cards */
+  --surface2:    #f1f3f5;         /* Slightly darker gray */
+  --border:      #dee2e6;         /* Light gray borders */
+  --text:        #2d3436;         /* Dark gray text */
+  --text-dim:    #636e72;         /* Medium gray for secondary text */
+  --text-bright: #000000;         /* Black for emphasis */
+  --accent:      #9d2235;         /* Arkansas Cardinal Red */
+  --accent-dim:  #7a1a2a;         /* Darker Arkansas Red */
+  --gold1:       #9d2235;         /* Use red for 1st place instead of gold */
+  --gold2:       #c62f43;         /* Lighter red */
+  --silver:      #6c757d;         /* Keep silver gray */
+  --bronze:      #cd7f32;         /* Keep bronze */
+  --green:       #28a745;         /* Keep green for positive indicators */
+  --red:         #9d2235;         /* Arkansas Red for alerts */
+  --blue:        #9d2235;         /* Replace blue with Arkansas Red */
+  --radius:      8px;
+  --radius-lg:   14px;
+}
+
+html { scroll-behavior: smooth; }
+body {
+  font-family: 'Barlow', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  font-size: 15px;
+  line-height: 1.5;
+  overflow-x: hidden;
+}
+
+/* ========== HEADER ========== */
+header {
+  position: relative;
+  background: linear-gradient(135deg, #9d2235 0%, #7a1a2a 50%, #9d2235 100%);
+  border-bottom: 3px solid var(--accent-dim);
+  padding: 28px 24px 24px;
+  box-shadow: 0 2px 8px rgba(157, 34, 53, 0.2);
+}
+  text-align: center;
+  overflow: hidden;
+}
+header::before {
+  content: '';
+  position: absolute;
+  top: -60px; left: 50%; transform: translateX(-50%);
+  width: 600px; height: 200px;
+  background: radial-gradient(ellipse, rgba(157, 34, 53, 0.15) 0%, transparent 70%);
+  pointer-events: none;
+}
+header h1 {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 800;
+  font-size: 2.6rem;
+  text-transform: uppercase;
+  letter-spacing: 3px;
+  color: #ffffff;
+  position: relative;
+}
+header h1 span { color: #ffffff; }
+header p {
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 0.88rem;
+  margin-top: 6px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  font-weight: 300;
+  position: relative;
+}
+
+/* ========== SEASON TOGGLE ========== */
+.season-toggle-bar {
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  padding: 12px 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+}
+.season-toggle-bar span {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  color: var(--text-dim);
+  font-weight: 600;
+}
+.season-toggle {
+  display: flex;
+  gap: 0;
+  border-radius: var(--radius);
+  overflow: hidden;
+  border: 1px solid var(--border);
+}
+.season-toggle button {
+  padding: 8px 24px;
+  background: var(--surface2);
+  border: none;
+  color: var(--text-dim);
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 0.9rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+  white-space: nowrap;
+}
+.season-toggle button.active { background: var(--accent); color: #fff; }
+.season-toggle button:hover:not(.active) { background: var(--border); color: var(--text); }
+
+/* ========== NAVIGATION TABS ========== */
+nav {
+  display: flex;
+  justify-content: center;
+  gap: 4px;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  padding: 10px 20px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+nav button {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 0.88rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  color: var(--text-dim);
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: var(--radius);
+  padding: 9px 28px;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s, border-color 0.2s;
+  white-space: nowrap;
+}
+nav button:hover:not(.active) {
+  background: var(--surface2);
+  color: var(--text);
+  border-color: var(--border);
+}
+nav button.active {
+  background: var(--accent);
+  color: #fff;
+  border-color: var(--accent);
+}
+
+/* ========== PAGE SECTIONS (shown/hidden by nav) ========== */
+.page { display: none; }
+.page.active { display: block; }
+
+/* ========== MAIN LAYOUT ========== */
+.container { max-width: 1260px; margin: 0 auto; padding: 28px 20px; }
+
+/* ========== FILTER BAR ========== */
+.filter-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: flex-end;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 20px 22px;
+  margin-bottom: 24px;
+}
+.filter-group { display: flex; flex-direction: column; gap: 5px; flex: 1; min-width: 140px; }
+.filter-group label {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  color: var(--text-dim);
+  font-weight: 600;
+}
+.filter-group select,
+.filter-group input {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  color: var(--text-bright);
+  padding: 9px 12px;
+  font-family: 'Barlow', sans-serif;
+  font-size: 0.9rem;
+  outline: none;
+  transition: border-color 0.2s;
+  -webkit-appearance: none;
+  appearance: none;
+}
+.filter-group select { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%235a6a7e'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 12px center; padding-right: 30px; }
+.filter-group select:focus, .filter-group input:focus { border-color: var(--accent); }
+.filter-group input::placeholder { color: var(--text-dim); }
+
+/* perf toggle pills */
+.perf-toggle { display: flex; gap: 0; border-radius: var(--radius); overflow: hidden; border: 1px solid var(--border); }
+.perf-toggle button {
+  flex: 1;
+  padding: 9px 14px;
+  background: var(--surface2);
+  border: none;
+  color: var(--text-dim);
+  font-family: 'Barlow', sans-serif;
+  font-size: 0.88rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+  white-space: nowrap;
+}
+.perf-toggle button.active { background: var(--accent); color: #fff; }
+.perf-toggle button:hover:not(.active) { background: var(--border); color: var(--text); }
+
+/* ========== SCORING KEY ========== */
+.scoring-key {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 12px 20px;
+  margin-bottom: 24px;
+}
+.scoring-key span.label {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  color: var(--text-dim);
+  margin-right: 4px;
+  font-weight: 600;
+}
+.score-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: var(--surface2);
+  border-radius: 20px;
+  padding: 4px 10px;
+  font-size: 0.78rem;
+  color: var(--text);
+}
+.score-badge .pos { color: var(--text-dim); font-size: 0.72rem; }
+.score-badge .pts { color: var(--accent); font-weight: 700; }
+
+/* ========== TABLE SECTION ========== */
+.table-header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 14px;
+}
+.table-title {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 1.35rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  color: var(--text-bright);
+}
+.table-title span { color: var(--accent); }
+.result-count { font-size: 0.8rem; color: var(--text-dim); }
+
+/* ========== DATA TABLE ========== */
+.table-wrap {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+table { width: 100%; border-collapse: collapse; }
+thead th {
+  background: var(--surface2);
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 1.8px;
+  color: var(--text-dim);
+  font-weight: 600;
+  padding: 12px 16px;
+  text-align: left;
+  border-bottom: 1px solid var(--border);
+  user-select: none;
+  white-space: nowrap;
+}
+thead th.right { text-align: right; }
+thead th.center { text-align: center; }
+
+tbody tr {
+  border-bottom: 1px solid var(--border);
+  transition: background 0.15s;
+}
+tbody tr:last-child { border-bottom: none; }
+tbody tr:hover { background: rgba(157, 34, 53, 0.05); }
+
+/* Top 3 highlight rows */
+tbody tr.rank-1 { 
+  border-left: 4px solid var(--gold1); 
+  background: rgba(157, 34, 53, 0.03);
+}
+tbody tr.rank-2 { 
+  border-left: 4px solid var(--silver);
+  background: rgba(108, 117, 125, 0.03);
+}
+tbody tr.rank-3 { 
+  border-left: 4px solid var(--bronze);
+  background: rgba(205, 127, 50, 0.03);
+}
+
+/* NCAA Qualifying Cutoff Line */
+.ncaa-cutoff-row {
+  background: transparent !important;
+  border: none !important;
+}
+.ncaa-cutoff-row:hover {
+  background: transparent !important;
+}
+.ncaa-cutoff-line {
+  position: relative;
+  padding: 16px 0;
+  text-align: center;
+  margin: 8px 0;
+}
+.ncaa-cutoff-line::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  height: 3px;
+  background: #9d2235;
+  z-index: 0;
+}
+.ncaa-cutoff-text {
+  position: relative;
+  z-index: 1;
+  background: var(--surface);
+  padding: 4px 16px;
+  font-weight: 700;
+  font-size: 0.85rem;
+  color: #9d2235;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border: 2px solid #9d2235;
+  border-radius: 4px;
+}
+
+td {
+  padding: 11px 16px;
+  color: var(--text);
+  font-size: 0.9rem;
+}
+td.right { text-align: right; font-family: 'Barlow Condensed', sans-serif; font-weight: 600; font-size: 0.95rem; }
+td.center { text-align: center; }
+
+/* Rank cell */
+.rank-num {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 800;
+  font-size: 1.1rem;
+  color: var(--text-dim);
+  min-width: 30px;
+  display: inline-block;
+  text-align: right;
+}
+.rank-num.top1 { color: #9d2235; font-weight: 900; }
+.rank-num.top2 { color: #6c757d; font-weight: 900; }
+.rank-num.top3 { color: #cd7f32; font-weight: 900; }
+
+/* Points badge */
+.pts-badge {
+  display: inline-block;
+  background: rgba(157, 34, 53, 0.15);
+  color: var(--accent);
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 700;
+  font-size: 0.82rem;
+  padding: 2px 8px;
+  border-radius: 4px;
+  min-width: 28px;
+  text-align: center;
+}
+.pts-badge.zero { background: transparent; color: var(--text-dim); font-weight: 500; }
+
+/* Year badge */
+.year-badge {
+  display: inline-block;
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 2px 7px;
+  border-radius: 4px;
+  background: var(--surface2);
+  color: var(--text-dim);
+  letter-spacing: 0.5px;
+}
+.year-badge.sr { background: rgba(72,187,120,0.12); color: var(--green); }
+.year-badge.jr { background: rgba(99,179,237,0.12); color: var(--blue); }
+.year-badge.so { background: rgba(232,168,56,0.12); color: var(--accent); }
+.year-badge.fr { background: rgba(252,129,129,0.12); color: var(--red); }
+
+/* Perf value coloring */
+.perf-val { font-size: 1rem; letter-spacing: 0.5px; }
+
+/* No results */
+.no-results {
+  text-align: center;
+  padding: 60px 20px;
+  color: var(--text-dim);
+  font-size: 1rem;
+}
+.no-results strong { color: var(--text); display: block; font-size: 1.1rem; margin-bottom: 6px; }
+
+/* ========== TEAM RANKINGS (bottom summary) ========== */
+.team-section { margin-top: 48px; }
+.team-table-wrap { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); overflow: hidden; }
+
+/* ========== COACHES SCORING LAYOUT ========== */
+.coaches-layout {
+  display: flex;
+  gap: 22px;
+  align-items: flex-start;
+}
+.coaches-left  { flex: 1; min-width: 0; }
+.coaches-right {
+  width: 320px;
+  flex-shrink: 0;
+  position: sticky;
+  top: 68px;
+  max-height: calc(100vh - 90px);
+  overflow-y: auto;
+}
+
+/* Sidebar header */
+.sidebar-title {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 1.05rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  color: var(--text-bright);
+  padding: 14px 16px 10px;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface2);
+  position: sticky;
+  top: 0;
+  z-index: 2;
+}
+.sidebar-title span { color: var(--accent); }
+
+/* Sidebar team rows — compact */
+.sidebar-wrap {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+.sidebar-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 7px 14px;
+  border-bottom: 1px solid rgba(30,42,58,0.5);
+  transition: background 0.15s;
+}
+.sidebar-row:last-child { border-bottom: none; }
+.sidebar-row:hover { background: rgba(30,42,58,0.4); }
+.sidebar-row.s-rank-1 { border-left: 3px solid var(--gold1); }
+.sidebar-row.s-rank-2 { border-left: 3px solid var(--silver); }
+.sidebar-row.s-rank-3 { border-left: 3px solid var(--bronze); }
+.sidebar-row .s-rank {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 800;
+  font-size: 0.95rem;
+  min-width: 22px;
+  text-align: right;
+  color: var(--text-dim);
+}
+.sidebar-row .s-rank.top1 { color: var(--gold1); }
+.sidebar-row .s-rank.top2 { color: var(--silver); }
+.sidebar-row .s-rank.top3 { color: var(--bronze); }
+.sidebar-row .s-name {
+  flex: 1;
+  font-size: 0.85rem;
+  color: var(--text-bright);
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.sidebar-row .s-pts {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 700;
+  font-size: 0.92rem;
+  color: var(--accent);
+  min-width: 32px;
+  text-align: right;
+}
+
+/* Coaches action bar (reset button) */
+.coaches-action-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 14px;
+}
+.btn-reset {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  color: var(--text-dim);
+  font-family: 'Barlow', sans-serif;
+  font-size: 0.82rem;
+  font-weight: 600;
+  padding: 7px 14px;
+  cursor: pointer;
+  transition: border-color 0.2s, color 0.2s;
+}
+.btn-reset:hover { border-color: var(--red); color: var(--red); }
+
+.btn-add-athlete {
+  background: var(--surface2);
+  border: 1px solid var(--accent);
+  border-radius: var(--radius);
+  color: var(--accent);
+  font-family: 'Barlow', sans-serif;
+  font-size: 0.82rem;
+  font-weight: 600;
+  padding: 7px 14px;
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s;
+}
+.btn-add-athlete:hover { background: var(--accent); color: #fff; }
+
+.btn-print {
+  background: var(--accent);
+  border: 1px solid var(--accent);
+  border-radius: var(--radius);
+  color: #fff;
+  font-family: 'Barlow', sans-serif;
+  font-size: 0.82rem;
+  font-weight: 600;
+  padding: 7px 14px;
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s;
+}
+.btn-print:hover { background: var(--accent-dim); border-color: var(--accent-dim); }
+
+.coaches-action-btns { display: flex; gap: 8px; }
+
+/* ========== ADD ATHLETE MODAL ========== */
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 9999;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.6);
+  backdrop-filter: blur(4px);
+  align-items: center;
+  justify-content: center;
+}
+.modal.show {
+  display: flex !important;
+}
+.modal-content {
+  background: var(--surface);
+  padding: 30px;
+  border-radius: 12px;
+  width: 90%;
+  max-width: 500px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+  position: relative;
+}
+.modal-close {
+  color: var(--text-dim);
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
+  cursor: pointer;
+  line-height: 20px;
+  transition: color 0.2s;
+}
+.modal-close:hover { color: var(--text); }
+.modal-content h2 {
+  margin: 0 0 20px 0;
+  color: var(--text-bright);
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 1.5rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+.form-group {
+  margin-bottom: 15px;
+}
+.form-group label {
+  display: block;
+  margin-bottom: 5px;
+  color: var(--text);
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+.form-group input, .form-group select {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface2);
+  color: var(--text-bright);
+  font-family: 'Barlow', sans-serif;
+  font-size: 0.9rem;
+}
+.form-group input:focus, .form-group select:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+.form-group small {
+  display: block;
+  margin-top: 4px;
+  color: var(--text-dim);
+  font-size: 0.75rem;
+}
+.modal-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 20px;
+}
+.btn-cancel {
+  flex: 1;
+  padding: 10px;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  color: var(--text-dim);
+  font-family: 'Barlow', sans-serif;
+  font-weight: 600;
+  cursor: pointer;
+  transition: border-color 0.2s, color 0.2s;
+}
+.btn-cancel:hover { border-color: var(--red); color: var(--red); }
+.btn-submit {
+  flex: 1;
+  padding: 10px;
+  background: var(--accent);
+  border: 1px solid var(--accent);
+  border-radius: var(--radius);
+  color: #fff;
+  font-family: 'Barlow', sans-serif;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.btn-submit:hover { background: var(--accent-dim); }
+
+/* ========== PRINT STYLES ========== */
+@media print {
+  * { box-sizing: border-box; }
+  body { background: #fff !important; color: #1a1a1a !important; font-family: 'Barlow', Arial, sans-serif !important; }
+  
+  /* Hide everything except the print content */
+  header, nav, .filter-bar, .scoring-key, .coaches-note,
+  .coaches-action-bar, .coaches-layout, .coaches-right, footer,
+  #page-athletes, #page-teams, #page-coaches { display: none !important; }
+  .page { display: none !important; }
+  
+  /* Show only the print score table */
+  #print-score-table { display: block !important; }
+  
+  .print-score-content {
+    padding: 20px;
+    max-width: 100%;
+  }
+  
+  .print-header {
+    text-align: center;
+    margin-bottom: 30px;
+    padding-bottom: 15px;
+    border-bottom: 3px solid #1a1a1a;
+  }
+  
+  .print-header h1 {
+    font-family: 'Barlow Condensed', Arial, sans-serif;
+    font-size: 2rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    color: #1a1a1a;
+    margin: 0 0 10px 0;
+  }
+  
+  .print-header p {
+    font-size: 0.9rem;
+    color: #666;
+    margin: 5px 0;
+    letter-spacing: 0.5px;
+  }
+  
+  .print-date {
+    font-size: 0.75rem !important;
+    color: #999 !important;
+    font-style: italic;
+  }
+  
+  /* Score Table */
+  .score-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    font-size: 0.75rem;
+  }
+  
+  .score-table thead th {
+    background: #2c3e50 !important;
+    color: #fff !important;
+    padding: 12px 8px;
+    text-align: center;
+    border: 1px solid #1a1a1a;
+    font-weight: 700;
+  }
+  
+  .score-table .event-col {
+    width: 140px;
+    background: #34495e !important;
+    text-align: left !important;
+    font-family: 'Barlow Condensed', Arial, sans-serif;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+  
+  .score-table .team-col {
+    width: 90px;
+    vertical-align: bottom;
+  }
+  
+  .score-table .team-col.top-1 { background: #d4a017 !important; }
+  .score-table .team-col.top-2 { background: #888 !important; }
+  .score-table .team-col.top-3 { background: #a0522d !important; }
+  
+  .team-rank {
+    font-size: 0.7rem;
+    opacity: 0.8;
+    margin-bottom: 3px;
+  }
+  
+  .team-name {
+    font-weight: 800;
+    font-size: 0.85rem;
+    margin-bottom: 3px;
+  }
+  
+  .team-total {
+    font-size: 0.7rem;
+    opacity: 0.9;
+    font-weight: 600;
+  }
+  
+  .score-table tbody td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: center;
+  }
+  
+  .score-table .event-name {
+    background: #f8f9fa !important;
+    font-weight: 600;
+    text-align: left !important;
+    font-family: 'Barlow Condensed', Arial, sans-serif;
+    color: #2c3e50;
+    padding-left: 12px !important;
+  }
+  
+  .score-table .team-data {
+    vertical-align: middle;
+  }
+  
+  .score-table .team-data.has-points {
+    background: #e8f5e9 !important;
+  }
+  
+  .score-table .points {
+    font-weight: 800;
+    font-size: 1rem;
+    color: #2e7d32;
+    margin-bottom: 2px;
+  }
+  
+  .score-table .count {
+    font-size: 0.65rem;
+    color: #666;
+  }
+  
+  .score-table .no-score {
+    color: #ccc;
+    font-size: 1rem;
+  }
+  
+  .score-table .total-row {
+    border-top: 3px solid #1a1a1a !important;
+  }
+  
+  .score-table .total-label {
+    background: #34495e !important;
+    color: #fff !important;
+    font-weight: 800;
+    font-family: 'Barlow Condensed', Arial, sans-serif;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    text-align: left !important;
+    padding-left: 12px !important;
+  }
+  
+  .score-table .total-points {
+    background: #ecf0f1 !important;
+    font-weight: 800;
+    font-size: 1.1rem;
+    color: #1a1a1a;
+  }
+  
+  .score-table .total-points.top-1 {
+    background: #fef5e7 !important;
+    color: #d4a017 !important;
+  }
+  
+  .score-table .total-points.top-2 {
+    background: #f0f0f0 !important;
+    color: #666 !important;
+  }
+  
+  .score-table .total-points.top-3 {
+    background: #fdf5f0 !important;
+    color: #a0522d !important;
+  }
+}
+    letter-spacing: 1.5px;
+    color: #1a1a1a;
+    margin: 0 0 10px;
+    padding-bottom: 6px;
+    border-bottom: 1px solid #ccc;
+  }
+  .print-team-summary table { width: 50%; }
+  .print-team-summary thead th { background: #f0f0f0 !important; }
+  .print-team-summary td { font-size: 0.8rem !important; padding: 5px 10px !important; }
+  .print-team-summary .pts-val { color: #d4a017; font-weight: 800; font-size: 0.95rem !important; }
+}
+
+/* Editable cells in coaches table */
+.coaches-input {
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 5px;
+  color: var(--text-bright);
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 0.95rem;
+  font-weight: 600;
+  padding: 4px 6px;
+  width: 100%;
+  outline: none;
+  transition: background 0.15s, border-color 0.2s;
+  -webkit-appearance: none;
+  appearance: none;
+}
+.coaches-input:hover { background: var(--surface2); border-color: var(--border); }
+.coaches-input:focus { background: var(--surface2); border-color: var(--accent); }
+.coaches-input::-webkit-outer-spin-button,
+.coaches-input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+.coaches-input[type=number] { -moz-appearance: textfield; }
+
+.coaches-input.place-input { text-align: center; max-width: 52px; color: var(--text); }
+.coaches-input.mark-input  { text-align: right;  max-width: 90px; }
+
+/* Lock toggle icons */
+.lock-toggle {
+  display: inline-block;
+  cursor: pointer;
+  font-size: 0.85rem;
+  margin-right: 6px;
+  vertical-align: middle;
+  transition: transform 0.15s, opacity 0.2s;
+  user-select: none;
+}
+.lock-toggle:hover { transform: scale(1.15); }
+.lock-toggle.locked { color: var(--accent); opacity: 1; }
+.lock-toggle.unlocked { color: var(--text-dim); opacity: 0.5; }
+.lock-toggle.unlocked:hover { opacity: 0.8; }
+
+/* Drag handle */
+.drag-handle {
+  cursor: grab;
+  display: inline-block;
+  margin-right: 8px;
+  font-size: 1rem;
+  color: var(--text-dim);
+  opacity: 0.4;
+  transition: opacity 0.15s;
+  user-select: none;
+  letter-spacing: -2px;
+}
+.drag-handle:hover { opacity: 0.8; }
+.drag-handle:active { cursor: grabbing; }
+
+/* Drag states for table rows */
+tbody tr[draggable="true"] { transition: background 0.15s; }
+tbody tr.dragging {
+  opacity: 0.5;
+  background: var(--accent) !important;
+}
+tbody tr.drag-over {
+  border-top: 3px solid var(--accent) !important;
+}
+
+/* Coaches event selector note */
+.coaches-note {
+  font-size: 0.78rem;
+  color: var(--text-dim);
+  font-style: italic;
+  margin-bottom: 14px;
+}
+
+/* Responsive: stack on small screens */
+@media (max-width: 900px) {
+  .coaches-layout { flex-direction: column; }
+  .coaches-right  { width: 100%; position: static; max-height: none; }
+}
+
+/* ========== FOOTER ========== */
+footer {
+  text-align: center;
+  padding: 36px 20px;
+  color: var(--text-dim);
+  font-size: 0.78rem;
+  letter-spacing: 0.5px;
+  margin-top: 40px;
+  border-top: 1px solid var(--border);
+}
+
+/* ========== ARKANSAS ANALYTICS STYLING ========== */
+.analytics-section {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  margin-bottom: 30px;
+  overflow: hidden;
+}
+
+.analytics-title {
+  background: linear-gradient(135deg, #9d2235 0%, #7a1a2a 100%);
+  color: white;
+  padding: 15px 20px;
+  margin: 0;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 700;
+  font-size: 1.3rem;
+  letter-spacing: 0.5px;
+  transition: background 0.2s;
+}
+
+.analytics-title:hover {
+  background: linear-gradient(135deg, #b82642 0%, #8f1f30 100%);
+}
+
+.collapse-icon {
+  display: inline-block;
+  transition: transform 0.3s;
+  margin-right: 8px;
+}
+
+.collapse-icon.collapsed {
+  transform: rotate(-90deg);
+}
+
+.analytics-content {
+  padding: 0;
+}
+
+.analytics-card {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 15px;
+  margin: 15px;
+}
+
+.analytics-stat {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.analytics-stat:last-child {
+  border-bottom: none;
+}
+
+.stat-label {
+  color: var(--text-dim);
+  font-size: 0.9rem;
+}
+
+.stat-value {
+  font-weight: 700;
+  font-size: 1.1rem;
+  color: var(--accent);
+}
+
+.gap-positive {
+  color: #28a745;
+  font-weight: 700;
+}
+
+.gap-negative {
+  color: #9d2235;
+  font-weight: 700;
+}
+
+.bubble-critical {
+  background: rgba(157, 34, 53, 0.1);
+  border-left: 4px solid #9d2235;
+  padding: 12px;
+  margin: 10px 15px;
+  border-radius: 4px;
+}
+
+.bubble-watch {
+  background: rgba(232, 168, 56, 0.1);
+  border-left: 4px solid #e8a838;
+  padding: 12px;
+  margin: 10px 15px;
+  border-radius: 4px;
+}
+
+.bubble-safe {
+  background: rgba(40, 167, 69, 0.1);
+  border-left: 4px solid #28a745;
+  padding: 12px;
+  margin: 10px 15px;
+  border-radius: 4px;
+}
+
+.event-comparison-row {
+  display: grid;
+  grid-template-columns: 150px 1fr 1fr auto;
+  gap: 15px;
+  padding: 12px 15px;
+  border-bottom: 1px solid var(--border);
+  align-items: center;
+}
+
+.event-comparison-row:hover {
+  background: rgba(157, 34, 53, 0.03);
+}
+
+.win-indicator {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 4px;
+  font-weight: 700;
+  font-size: 0.85rem;
+}
+
+.win-indicator.win {
+  background: rgba(40, 167, 69, 0.2);
+  color: #28a745;
+}
+
+.win-indicator.loss {
+  background: rgba(157, 34, 53, 0.2);
+  color: #9d2235;
+}
+
+/* ========== RESPONSIVE ========== */
+@media (max-width: 700px) {
+  header h1 { font-size: 1.7rem; letter-spacing: 1px; }
+  nav button { padding: 8px 16px; font-size: 0.78rem; letter-spacing: 1px; }
+  .filter-bar { padding: 16px; }
+  .filter-group { min-width: 100%; }
+  td, th { padding: 9px 10px; font-size: 0.82rem; }
+  .perf-val { font-size: 0.88rem; }
+}
+</style>
+</head>
+<body>
+
+<!-- ===== HEADER ===== -->
+<header>
+  <h1>Collegiate <span>Track & Field</span> Rankings</h1>
+  <p>NCAA Division I · Season 2025–2026</p>
+</header>
+
+<!-- ===== SEASON TOGGLE ===== -->
+<div class="season-toggle-bar">
+  <span>Season:</span>
+  <div class="season-toggle">
+    <button class="active" data-season="Indoor">Indoor</button>
+    <button data-season="Outdoor">Outdoor</button>
+  </div>
+</div>
+
+<!-- ===== NAVIGATION ===== -->
+<nav>
+  <button class="active" data-page="athletes">Athlete Rankings</button>
+  <button data-page="teams">Team Rankings</button>
+  <button data-page="coaches">Coaches Scoring</button>
+  <button data-page="analytics">Arkansas Analytics</button>
+</nav>
+
+<!-- ===== PAGE: ATHLETE RANKINGS ===== -->
+<div class="page active" id="page-athletes">
+<div class="container">
+
+  <!-- FILTER BAR -->
+  <div class="filter-bar">
+    <div class="filter-group">
+      <label>Gender</label>
+      <select id="filterGender">
+        <option value="Men">Men</option>
+        <option value="Women">Women</option>
+      </select>
+    </div>
+    <div class="filter-group">
+      <label>Conference</label>
+      <select id="filterConference">
+        <option value="All">All Conferences</option>
+        <option value="SEC">SEC</option>
+        <option value="Big Ten">Big Ten</option>
+        <option value="Big 12">Big 12</option>
+        <option value="ACC">ACC</option>
+        <option value="Pac-12">Pac-12</option>
+        <option value="Mountain West">Mountain West</option>
+        <option value="American">American</option>
+        <option value="C-USA">C-USA</option>
+        <option value="Sun Belt">Sun Belt</option>
+        <option value="MAC">MAC</option>
+        <option value="Ivy League">Ivy League</option>
+        <option value="Big East">Big East</option>
+        <option value="WCC">WCC</option>
+        <option value="Other">Other</option>
+      </select>
+    </div>
+    <div class="filter-group">
+      <label>Event Category</label>
+      <select id="filterCategory">
+        <option value="All">All Categories</option>
+        <option value="Sprints">Sprints</option>
+        <option value="Middle">Middle Distance</option>
+        <option value="Distance">Distance</option>
+        <option value="Hurdles">Hurdles</option>
+        <option value="Relays">Relays</option>
+        <option value="Field">Field Events</option>
+      </select>
+    </div>
+    <div class="filter-group">
+      <label>Specific Event</label>
+      <select id="filterEvent">
+        <option value="All">All Events</option>
+      </select>
+    </div>
+    <div class="filter-group">
+      <label>Show Top</label>
+      <select id="filterLimit">
+        <option value="16">16</option>
+        <option value="25">25</option>
+        <option value="50" selected>50</option>
+        <option value="100">100</option>
+        <option value="200">200</option>
+        <option value="500">500</option>
+      </select>
+    </div>
+    <div class="filter-group" style="flex:1.5;">
+      <label>Search by Team</label>
+      <input type="text" id="searchTeam" placeholder="e.g. Oregon, Texas…" />
+    </div>
+  </div>
+
+  <!-- SCORING KEY -->
+  <div class="scoring-key">
+    <span class="label">Scoring:</span>
+    <span class="score-badge"><span class="pos">1st</span><span class="pts">10 pts</span></span>
+    <span class="score-badge"><span class="pos">2nd</span><span class="pts">8 pts</span></span>
+    <span class="score-badge"><span class="pos">3rd</span><span class="pts">6 pts</span></span>
+    <span class="score-badge"><span class="pos">4th</span><span class="pts">5 pts</span></span>
+    <span class="score-badge"><span class="pos">5th</span><span class="pts">4 pts</span></span>
+    <span class="score-badge"><span class="pos">6th</span><span class="pts">3 pts</span></span>
+    <span class="score-badge"><span class="pos">7th</span><span class="pts">2 pts</span></span>
+    <span class="score-badge"><span class="pos">8th</span><span class="pts">1 pt</span></span>
+    <span class="score-badge" style="background:transparent; border:1px solid var(--border);"><span class="pos">9th–50th</span><span class="pts" style="color:var(--text-dim);">0 pts</span></span>
+  </div>
+
+  <!-- ATHLETE TABLE -->
+  <div class="table-header-row">
+    <div>
+      <div class="table-title" id="tableTitle">Men — <span>All Events</span></div>
+    </div>
+    <div class="result-count" id="resultCount"></div>
+  </div>
+  <div class="table-wrap" id="athleteTableWrap">
+    <table>
+      <thead>
+        <tr>
+          <th style="width:50px;">#</th>
+          <th>Athlete</th>
+          <th>School</th>
+          <th class="center">Year</th>
+          <th>Event</th>
+          <th class="right" id="perfHeader">Mark</th>
+          <th class="right center">Pts</th>
+        </tr>
+      </thead>
+      <tbody id="athleteBody"></tbody>
+    </table>
+    <div class="no-results" id="noResults" style="display:none;">
+      <strong>No athletes found</strong>
+      Try adjusting your filters or search term.
+    </div>
+  </div>
+</div>
+</div><!-- end page-athletes -->
+
+<!-- ===== PAGE: TEAM RANKINGS ===== -->
+<div class="page" id="page-teams">
+<div class="container">
+
+  <!-- TEAM FILTER BAR -->
+  <div class="filter-bar">
+    <div class="filter-group">
+      <label>Gender</label>
+      <select id="teamFilterGender">
+        <option value="Men">Men</option>
+        <option value="Women">Women</option>
+      </select>
+    </div>
+    <div class="filter-group">
+      <label>Conference</label>
+      <select id="teamFilterConference">
+        <option value="All">All Conferences</option>
+        <option value="SEC">SEC</option>
+        <option value="Big Ten">Big Ten</option>
+        <option value="Big 12">Big 12</option>
+        <option value="ACC">ACC</option>
+        <option value="Pac-12">Pac-12</option>
+        <option value="Mountain West">Mountain West</option>
+        <option value="American">American</option>
+        <option value="C-USA">C-USA</option>
+        <option value="Sun Belt">Sun Belt</option>
+        <option value="MAC">MAC</option>
+        <option value="Ivy League">Ivy League</option>
+        <option value="Big East">Big East</option>
+        <option value="WCC">WCC</option>
+        <option value="Other">Other</option>
+      </select>
+    </div>
+    <div class="filter-group">
+      <label>Event Category</label>
+      <select id="teamFilterCategory">
+        <option value="All">All Categories</option>
+        <option value="Sprints">Sprints</option>
+        <option value="Middle">Middle Distance</option>
+        <option value="Distance">Distance</option>
+        <option value="Hurdles">Hurdles</option>
+        <option value="Relays">Relays</option>
+        <option value="Field">Field Events</option>
+      </select>
+    </div>
+    <div class="filter-group">
+      <label>Specific Event</label>
+      <select id="teamFilterEvent">
+        <option value="All">All Events</option>
+      </select>
+    </div>
+    <div class="filter-group">
+      <label>Show Top</label>
+      <select id="teamFilterLimit">
+        <option value="16">16</option>
+        <option value="25">25</option>
+        <option value="50" selected>50</option>
+        <option value="100">100</option>
+        <option value="200">200</option>
+        <option value="500">500</option>
+      </select>
+    </div>
+    <div class="filter-group" style="flex:1.5;">
+      <label>Search by School</label>
+      <input type="text" id="teamSearchSchool" placeholder="e.g. Oregon, Texas…" />
+    </div>
+  </div>
+
+  <!-- SCORING KEY (teams page) -->
+  <div class="scoring-key">
+    <span class="label">Scoring:</span>
+    <span class="score-badge"><span class="pos">1st</span><span class="pts">10 pts</span></span>
+    <span class="score-badge"><span class="pos">2nd</span><span class="pts">8 pts</span></span>
+    <span class="score-badge"><span class="pos">3rd</span><span class="pts">6 pts</span></span>
+    <span class="score-badge"><span class="pos">4th</span><span class="pts">5 pts</span></span>
+    <span class="score-badge"><span class="pos">5th</span><span class="pts">4 pts</span></span>
+    <span class="score-badge"><span class="pos">6th</span><span class="pts">3 pts</span></span>
+    <span class="score-badge"><span class="pos">7th</span><span class="pts">2 pts</span></span>
+    <span class="score-badge"><span class="pos">8th</span><span class="pts">1 pt</span></span>
+    <span class="score-badge" style="background:transparent; border:1px solid var(--border);"><span class="pos">9th–50th</span><span class="pts" style="color:var(--text-dim);">0 pts</span></span>
+  </div>
+
+  <!-- TEAM TABLE -->
+  <div class="table-header-row">
+    <div class="table-title" id="teamPageTitle">Men — <span>Team Rankings</span></div>
+    <div class="result-count" id="teamPageCount"></div>
+  </div>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th style="width:50px;">#</th>
+          <th>School</th>
+          <th class="right">Total Pts</th>
+          <th class="right">Scored Athletes</th>
+          <th class="right">Events Scored</th>
+          <th class="right">Best Event</th>
+        </tr>
+      </thead>
+      <tbody id="teamPageBody"></tbody>
+    </table>
+    <div class="no-results" id="noTeamPageResults" style="display:none;">
+      <strong>No teams found</strong>
+      Try adjusting your filters or search term.
+    </div>
+  </div>
+</div>
+</div><!-- end page-teams -->
+
+<!-- ===== PAGE: COACHES SCORING ===== -->
+<div class="page" id="page-coaches">
+<div class="container">
+
+  <!-- COACHES FILTER BAR — gender + event required (no "All" for event) -->
+  <div class="filter-bar">
+    <div class="filter-group">
+      <label>Gender</label>
+      <select id="coachFilterGender">
+        <option value="Men">Men</option>
+        <option value="Women">Women</option>
+      </select>
+    </div>
+    <div class="filter-group">
+      <label>Conference</label>
+      <select id="coachFilterConference">
+        <option value="All">All Conferences</option>
+        <option value="SEC">SEC</option>
+        <option value="Big Ten">Big Ten</option>
+        <option value="Big 12">Big 12</option>
+        <option value="ACC">ACC</option>
+        <option value="Pac-12">Pac-12</option>
+        <option value="Mountain West">Mountain West</option>
+        <option value="American">American</option>
+        <option value="C-USA">C-USA</option>
+        <option value="Sun Belt">Sun Belt</option>
+        <option value="MAC">MAC</option>
+        <option value="Ivy League">Ivy League</option>
+        <option value="Big East">Big East</option>
+        <option value="WCC">WCC</option>
+        <option value="Other">Other</option>
+      </select>
+    </div>
+    <div class="filter-group">
+      <label>Event Category</label>
+      <select id="coachFilterCategory">
+        <option value="All">All Categories</option>
+        <option value="Sprints">Sprints</option>
+        <option value="Middle">Middle Distance</option>
+        <option value="Distance">Distance</option>
+        <option value="Hurdles">Hurdles</option>
+        <option value="Relays">Relays</option>
+        <option value="Field">Field Events</option>
+      </select>
+    </div>
+    <div class="filter-group">
+      <label>Select Event</label>
+      <select id="coachFilterEvent"></select>
+    </div>
+    <div class="filter-group">
+      <label>Show Top</label>
+      <select id="coachFilterLimit">
+        <option value="16">16</option>
+        <option value="25">25</option>
+        <option value="50" selected>50</option>
+        <option value="100">100</option>
+        <option value="200">200</option>
+        <option value="500">500</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- SCORING KEY -->
+  <div class="scoring-key">
+    <span class="label">Scoring:</span>
+    <span class="score-badge"><span class="pos">1st</span><span class="pts">10 pts</span></span>
+    <span class="score-badge"><span class="pos">2nd</span><span class="pts">8 pts</span></span>
+    <span class="score-badge"><span class="pos">3rd</span><span class="pts">6 pts</span></span>
+    <span class="score-badge"><span class="pos">4th</span><span class="pts">5 pts</span></span>
+    <span class="score-badge"><span class="pos">5th</span><span class="pts">4 pts</span></span>
+    <span class="score-badge"><span class="pos">6th</span><span class="pts">3 pts</span></span>
+    <span class="score-badge"><span class="pos">7th</span><span class="pts">2 pts</span></span>
+    <span class="score-badge"><span class="pos">8th</span><span class="pts">1 pt</span></span>
+    <span class="score-badge" style="background:transparent; border:1px solid var(--border);"><span class="pos">9th–50th</span><span class="pts" style="color:var(--text-dim);">0 pts</span></span>
+  </div>
+
+  <p class="coaches-note">Edit marks or places, then press <strong style="color:var(--text);">Enter</strong> or click away to update. Click 🔒/🔓 to lock/unlock an athlete's place. Locked places won't auto-rerank when marks change. Team totals show cumulative scores across all events.</p>
+
+  <!-- TWO COLUMN LAYOUT -->
+  <div class="coaches-layout">
+
+    <!-- LEFT: editable athlete table -->
+    <div class="coaches-left">
+      <div class="coaches-action-bar">
+        <div class="table-title" id="coachesTitle">Men — <span>100m</span></div>
+      <div class="coaches-action-btns">
+        <button class="btn-add-athlete" id="coachAddAthleteBtn">&#10010; Add Athlete</button>
+        <button class="btn-reset" id="coachResetBtn">&#8594; Reset This Event</button>
+        <button class="btn-print" id="coachPrintBtn">&#128196; Print Sheet</button>
+      </div>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th style="width:50px;">#</th>
+              <th>Athlete</th>
+              <th>School</th>
+              <th class="center" style="width:56px;">Place</th>
+              <th class="right" style="width:100px;" id="coachMarkHeader">Mark</th>
+              <th class="right center" style="width:60px;">Pts</th>
+            </tr>
+          </thead>
+          <tbody id="coachesBody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- RIGHT: live team sidebar -->
+    <div class="coaches-right">
+      <div class="sidebar-wrap">
+        <div class="sidebar-title">&#128202; Cumulative Team Totals — <span id="coachSidebarEvent">All Events</span></div>
+        <div id="coachesSidebar"></div>
+      </div>
+    </div>
+
+  </div><!-- end coaches-layout -->
+</div>
+</div><!-- end page-coaches -->
+
+<!-- ===== PAGE: ARKANSAS ANALYTICS ===== -->
+<div class="page" id="page-analytics">
+<div class="container">
+  
+  <div style="text-align:center;margin-bottom:30px;">
+    <h2 style="font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:2.2rem;color:#9d2235;margin:0;">🐗 ARKANSAS ANALYTICS</h2>
+    <p style="color:var(--text-dim);margin-top:8px;">Comprehensive coaching tools for the Razorbacks</p>
+  </div>
+
+  <!-- Season/Gender Selector for Analytics -->
+  <div class="filter-bar" style="margin-bottom:30px;">
+    <div class="filter-group">
+      <label>Gender</label>
+      <select id="analyticsGender">
+        <option value="Men">Men</option>
+        <option value="Women">Women</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- Feature 1: Arkansas vs Field Comparison -->
+  <div class="analytics-section">
+    <h3 class="analytics-title" onclick="toggleAnalyticsSection(this)" style="cursor:pointer;">
+      <span class="collapse-icon">▼</span> 1. Arkansas vs Field Comparison
+    </h3>
+    <div id="arkVsFieldContent" class="analytics-content" style="display:block;">
+      <p style="color:var(--text-dim);text-align:center;padding:20px;">Select gender and data will load...</p>
+    </div>
+  </div>
+
+  <!-- Feature 2: Bubble Watch -->
+  <div class="analytics-section">
+    <h3 class="analytics-title" onclick="toggleAnalyticsSection(this)" style="cursor:pointer;">
+      <span class="collapse-icon">▼</span> 2. Nationals Bubble Watch
+    </h3>
+    <div id="bubbleWatchContent" class="analytics-content" style="display:block;">
+      <p style="color:var(--text-dim);text-align:center;padding:20px;">Loading bubble watch...</p>
+    </div>
+  </div>
+
+  <!-- Feature 3: Points Gap Analysis -->
+  <div class="analytics-section">
+    <h3 class="analytics-title" onclick="toggleAnalyticsSection(this)" style="cursor:pointer;">
+      <span class="collapse-icon">▼</span> 3. Points Gap Analysis
+    </h3>
+    <div id="pointsGapContent" class="analytics-content" style="display:block;">
+      <p style="color:var(--text-dim);text-align:center;padding:20px;">Analyzing points gaps...</p>
+    </div>
+  </div>
+
+  <!-- Feature 4: Season Progression (Placeholder) -->
+  <div class="analytics-section">
+    <h3 class="analytics-title" onclick="toggleAnalyticsSection(this)" style="cursor:pointer;">
+      <span class="collapse-icon">▼</span> 4. Season Progression Tracker
+    </h3>
+    <div class="analytics-content" style="display:none;padding:20px;text-align:center;">
+      <p style="color:var(--text-dim);">📊 <strong>Coming Soon:</strong> Track athlete improvement week-over-week</p>
+      <p style="color:var(--text-dim);font-size:0.85rem;margin-top:10px;">Requires historical data from multiple meets throughout the season</p>
+    </div>
+  </div>
+
+  <!-- Feature 5: Event Depth Chart -->
+  <div class="analytics-section">
+    <h3 class="analytics-title" onclick="toggleAnalyticsSection(this)" style="cursor:pointer;">
+      <span class="collapse-icon">▼</span> 5. Event Depth Chart
+    </h3>
+    <div class="analytics-content" style="display:block;padding:15px;">
+      <div style="display:flex;gap:15px;margin-bottom:15px;flex-wrap:wrap;">
+        <div style="flex:1;min-width:200px;">
+          <label style="font-weight:600;color:var(--text);margin-right:10px;">Championship:</label>
+          <select id="depthChartChampionship" style="padding:8px;border-radius:4px;border:1px solid var(--border);background:var(--surface);color:var(--text);width:100%;">
+            <option value="National">National Championship</option>
+            <option value="SEC">SEC Championship</option>
+          </select>
+        </div>
+        <div style="flex:1;min-width:200px;">
+          <label style="font-weight:600;color:var(--text);margin-right:10px;">Select Event:</label>
+          <select id="depthChartEvent" style="padding:8px;border-radius:4px;border:1px solid var(--border);background:var(--surface);color:var(--text);width:100%;">
+            <option value="">-- Select Event --</option>
+          </select>
+        </div>
+      </div>
+      <div id="depthChartContent">
+        <p style="color:var(--text-dim);text-align:center;padding:20px;">Select an event to see Arkansas depth...</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Feature 6: Championship Simulator -->
+  <div class="analytics-section">
+    <h3 class="analytics-title" onclick="toggleAnalyticsSection(this)" style="cursor:pointer;">
+      <span class="collapse-icon">▼</span> 6. National Championship Simulator
+    </h3>
+    <div class="analytics-content" style="display:block;padding:20px;">
+      <div style="background:rgba(157,34,53,0.1);padding:20px;border-radius:8px;border-left:4px solid #9d2235;">
+        <h4 style="margin:0 0 10px 0;color:#9d2235;">Current National Projection</h4>
+        <div id="simCurrentProjection" style="font-size:1.1rem;color:var(--text);"></div>
+      </div>
+      <div style="margin-top:20px;">
+        <h4 style="color:var(--text);margin-bottom:10px;">What-If Scenarios:</h4>
+        <div id="simScenarios"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Feature 7: Export PDF (Button) -->
+  <div class="analytics-section">
+    <h3 class="analytics-title" onclick="toggleAnalyticsSection(this)" style="cursor:pointer;">
+      <span class="collapse-icon">▼</span> 7. Export Game Plan
+    </h3>
+    <div class="analytics-content" style="display:block;padding:30px;text-align:center;">
+      <button id="exportPdfBtn" style="background:#9d2235;color:white;padding:15px 40px;font-size:1.1rem;border:none;border-radius:8px;cursor:pointer;font-weight:700;">
+        📄 Generate PDF Report
+      </button>
+      <p style="color:var(--text-dim);margin-top:15px;font-size:0.85rem;">Exports all Arkansas analytics to a printable PDF</p>
+    </div>
+  </div>
+
+</div>
+</div><!-- end page-analytics -->
+
+<footer>
+  Collegiate Track & Field Rankings · Built for personal use
+</footer>
+
+<!-- ===== DATA FILE ===== -->
+<script src="sample_data.js"></script>
+
+<!-- ===== APP LOGIC ===== -->
+<script>
+// ============================================================
+// SCORING MAP  — edit these values if you ever change the rules
+// ============================================================
+const SCORE_MAP = { 1:10, 2:8, 3:6, 4:5, 5:4, 6:3, 7:2, 8:1 };
+
+// Event categories for organizing print output
+const EVENT_CATEGORIES = {
+  "60m": "Sprints", "100m": "Sprints", "200m": "Sprints", "400m": "Sprints",
+  "800m": "Middle", "Mile": "Middle", "1500m": "Middle",
+  "3000m": "Distance", "5000m": "Distance", "10000m": "Distance",
+  "60m Hurdles": "Hurdles", "110m Hurdles": "Hurdles", "400m Hurdles": "Hurdles",
+  "3000m Steeplechase": "Distance",
+  "4x100m Relay": "Relays", "4x400m Relay": "Relays", "Distance Medley Relay": "Relays",
+  "High Jump": "Field", "Pole Vault": "Field", "Long Jump": "Field", "Triple Jump": "Field",
+  "Shot Put": "Field", "Discus": "Field", "Hammer": "Field", "Javelin": "Field",
+  "Weight Throw": "Field", "Heptathlon": "Field"
+};
+
+// ============================================================
+// GLOBAL SEASON STATE
+// ============================================================
+let currentSeason = 'Indoor';  // 'Indoor' or 'Outdoor'
+let elite10Mode = false;  // Easter egg: Top 10 Teams Only mode
+
+// 2024 NCAA Championship Qualifying Marks (last year's actual cutoffs)
+// These are the marks that the 16th place athlete (or 12th for certain relays) had
+const NCAA_2024_QUALIFYING_MARKS = {
+  "Indoor": {
+    "Men": {
+      "60m": 6.57,
+      "200m": 20.66,
+      "400m": 45.97,
+      "800m": 107.47,  // 1:47.47
+      "Mile": 243.69,  // 4:03.69
+      "3000m": 487.91,  // 8:07.91
+      "5000m": 824.68,  // 13:44.68
+      "60m Hurdles": 7.64,
+      "4x400m Relay": 186.50,  // 3:06.50 (Top 12)
+      "Distance Medley Relay": 575.23,  // 9:35.23 (Top 12)
+      "High Jump": 2.21,  // meters
+      "Pole Vault": 5.50,
+      "Long Jump": 7.73,
+      "Triple Jump": 16.16,
+      "Shot Put": 19.21,
+      "Weight Throw": 21.34,
+      "Heptathlon": 5750
+    },
+    "Women": {
+      "60m": 7.22,
+      "200m": 23.22,
+      "400m": 52.41,
+      "800m": 127.68,  // 2:07.68
+      "Mile": 278.84,  // 4:38.84
+      "3000m": 565.12,  // 9:25.12
+      "5000m": 979.45,  // 16:19.45
+      "60m Hurdles": 8.09,
+      "4x400m Relay": 219.87,  // 3:39.87 (Top 12)
+      "Distance Medley Relay": 674.91,  // 11:14.91 (Top 12)
+      "High Jump": 1.82,
+      "Pole Vault": 4.35,
+      "Long Jump": 6.40,
+      "Triple Jump": 13.35,
+      "Shot Put": 17.12,
+      "Weight Throw": 21.92,
+      "Pentathlon": 4250
+    }
+  },
+  "Outdoor": {
+    "Men": {
+      "100m": 10.18,
+      "200m": 20.47,
+      "400m": 45.38,
+      "800m": 106.23,  // 1:46.23
+      "1500m": 217.89,  // 3:37.89
+      "5000m": 814.56,  // 13:34.56
+      "10000m": 1718.34,  // 28:38.34
+      "110m Hurdles": 13.58,
+      "400m Hurdles": 49.87,
+      "3000m Steeplechase": 525.67,  // 8:45.67
+      "4x100m Relay": 38.92,
+      "4x400m Relay": 182.45,  // 3:02.45 (Top 12)
+      "High Jump": 2.21,
+      "Pole Vault": 5.40,
+      "Long Jump": 7.82,
+      "Triple Jump": 16.28,
+      "Shot Put": 19.45,
+      "Discus": 59.12,
+      "Hammer": 68.45,
+      "Javelin": 75.23,
+      "Decathlon": 7650
+    },
+    "Women": {
+      "100m": 11.32,
+      "200m": 23.01,
+      "400m": 51.78,
+      "800m": 125.89,  // 2:05.89
+      "1500m": 251.34,  // 4:11.34
+      "5000m": 972.45,  // 16:12.45
+      "10000m": 2034.56,  // 33:54.56
+      "100m Hurdles": 12.98,
+      "400m Hurdles": 56.89,
+      "3000m Steeplechase": 614.78,  // 10:14.78
+      "4x100m Relay": 43.67,
+      "4x400m Relay": 215.34,  // 3:35.34 (Top 12)
+      "High Jump": 1.83,
+      "Pole Vault": 4.30,
+      "Long Jump": 6.45,
+      "Triple Jump": 13.42,
+      "Shot Put": 16.89,
+      "Discus": 55.67,
+      "Hammer": 65.34,
+      "Javelin": 53.12,
+      "Heptathlon": 5800
+    }
+  }
+};
+
+// Season toggle handler
+const seasonBtns = document.querySelectorAll('.season-toggle button');
+seasonBtns.forEach(btn => {
+  btn.addEventListener('click', () => {
+    seasonBtns.forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    currentSeason = btn.dataset.season;
+    
+    // Re-render all pages with new season data
+    populateAthleteEventDropdown();
+    populateTeamEventDropdown();
+    populateCoachEventDropdown();
+    coachState.event = elC.event.value || Object.keys(athleteData[currentSeason][coachState.gender])[0];
+    renderAthletes();
+    renderTeams();
+    renderCoaches();
+  });
+});
+
+// ============================================================
+// NAV — switch between pages
+// ============================================================
+const navBtns   = document.querySelectorAll('nav button');
+const pages     = document.querySelectorAll('.page');
+
+navBtns.forEach(btn => {
+  btn.addEventListener('click', () => {
+    // Deactivate all nav buttons & pages
+    navBtns.forEach(b => b.classList.remove('active'));
+    pages.forEach(p => p.classList.remove('active'));
+
+    // Activate the clicked one
+    btn.classList.add('active');
+    document.getElementById('page-' + btn.dataset.page).classList.add('active');
+
+    // Re-render the page that just became visible (so it's always fresh)
+    if (btn.dataset.page === 'athletes') renderAthletes();
+    if (btn.dataset.page === 'teams')    renderTeams();
+    if (btn.dataset.page === 'coaches')  renderCoaches();
+  });
+});
+
+// ============================================================
+// ===== ATHLETE PAGE STATE + LOGIC =====
+// ============================================================
+let athleteState = {
+  gender:   'Men',
+  conference: 'All',
+  category: 'All',
+  event:    'All',
+  perfType: 'personal_best',
+  teamQ:    '',
+  limit:    50
+};
+
+// DOM refs — athlete page
+const elA = {
+  gender:   document.getElementById('filterGender'),
+  conference: document.getElementById('filterConference'),
+  category: document.getElementById('filterCategory'),
+  event:    document.getElementById('filterEvent'),
+  limit:    document.getElementById('filterLimit'),
+  search:   document.getElementById('searchTeam'),
+  // perfBtns: document.getElementById('page-athletes').querySelectorAll('.perf-toggle button'), // Removed - performance toggle removed
+  body:     document.getElementById('athleteBody'),
+  title:    document.getElementById('tableTitle'),
+  count:    document.getElementById('resultCount'),
+  perfHdr:  document.getElementById('perfHeader'),
+  noRes:    document.getElementById('noResults')
+};
+
+// Listeners — athlete page
+elA.gender.addEventListener('change', () => {
+  athleteState.gender   = elA.gender.value;
+  athleteState.event    = 'All';
+  populateAthleteEventDropdown();
+  renderAthletes();
+});
+elA.conference.addEventListener('change', () => {
+  athleteState.conference = elA.conference.value;
+  renderAthletes();
+});
+elA.category.addEventListener('change', () => {
+  athleteState.category = elA.category.value;
+  athleteState.event    = 'All';
+  populateAthleteEventDropdown();
+  renderAthletes();
+});
+elA.event.addEventListener('change', () => {
+  athleteState.event = elA.event.value;
+  renderAthletes();
+});
+elA.limit.addEventListener('change', () => {
+  athleteState.limit = parseInt(elA.limit.value, 10);
+  renderAthletes();
+});
+elA.search.addEventListener('input', () => {
+  athleteState.teamQ = elA.search.value.trim().toLowerCase();
+  renderAthletes();
+});
+// Performance type toggle removed - now only showing season best marks
+// elA.perfBtns.forEach(btn => {
+//   btn.addEventListener('click', () => {
+//     elA.perfBtns.forEach(b => b.classList.remove('active'));
+//     btn.classList.add('active');
+//     athleteState.perfType = btn.dataset.perf;
+//     renderAthletes();
+//   });
+// });
+
+function populateAthleteEventDropdown() {
+  console.log('populateAthleteEventDropdown called');
+  console.log('  Season:', currentSeason, 'Gender:', athleteState.gender);
+  
+  const genderData = athleteData[currentSeason][athleteState.gender];
+  console.log('  Gender data exists:', !!genderData);
+  
+  if (!genderData) {
+    console.error('  No gender data found!');
+    return;
+  }
+  
+  const events = Object.keys(genderData);
+  console.log('  All events:', events);
+  
+  elA.event.innerHTML = '<option value="All">All Events</option>';
+  
+  let addedCount = 0;
+  events.forEach(ev => {
+    const eventData = genderData[ev];
+    console.log('  Checking event:', ev, 'Length:', eventData?.length);
+    
+    // Skip empty events
+    if (!eventData || eventData.length === 0) {
+      console.log('    Skipped (empty)');
+      return;
+    }
+    
+    if (athleteState.category !== 'All') {
+      const sample = eventData[0];
+      if (sample && sample.category !== athleteState.category) {
+        console.log('    Skipped (wrong category)');
+        return;
+      }
+    }
+    const opt = document.createElement('option');
+    opt.value = ev; opt.textContent = ev;
+    elA.event.appendChild(opt);
+    addedCount++;
+    console.log('    Added!');
+  });
+  
+  elA.event.value = 'All';
+  console.log('  Total events added:', addedCount);
+}
+
+// Shared helper: get athletes filtered & ranked for a given state object
+function getFilteredAthletes(st) {
+  const genderData = athleteData[currentSeason][st.gender];
+  let athletes = [];
+
+  // ELITE 10 MODE: Calculate top 10 teams FIRST from ALL data
+  let top10Teams = null;
+  if (elite10Mode) {
+    const teamMap = {};
+    
+    // Calculate from ALL events first
+    Object.keys(genderData).forEach(eventName => {
+      const eventAthletes = genderData[eventName];
+      const lib = eventAthletes[0].lower_is_better;
+      const key = st.perfType === 'personal_best' ? 'pb_raw' : 'sb_raw';
+      const sorted = [...eventAthletes].sort((a, b) => lib ? a[key] - b[key] : b[key] - a[key]);
+      
+      sorted.forEach((a, i) => {
+        if (!a.is_secondary_team) {
+          if (!teamMap[a.school]) {
+            teamMap[a.school] = { name: a.school, totalPts: 0 };
+          }
+          let scoringPosition = 1;
+          for (let j = 0; j < i; j++) {
+            if (!sorted[j].is_secondary_team) scoringPosition++;
+          }
+          const pts = SCORE_MAP[scoringPosition] || 0;
+          teamMap[a.school].totalPts += pts;
+        }
+      });
+    });
+    
+    top10Teams = Object.values(teamMap)
+      .sort((a, b) => b.totalPts - a.totalPts)
+      .slice(0, 10)
+      .map(t => t.name);
+  }
+
+  // NOW filter by category and event
+  Object.keys(genderData).forEach(eventName => {
+    const sample = genderData[eventName][0];
+    if (st.category !== 'All' && sample.category !== st.category) return;
+    if (st.event !== 'All' && eventName !== st.event) return;
+    genderData[eventName].forEach(a => {
+      // Apply Elite 10 filter here
+      if (elite10Mode && !top10Teams.includes(a.school)) return;
+      athletes.push(a);
+    });
+  });
+
+  // Filter by conference if specified
+  if (st.conference && st.conference !== 'All') {
+    athletes = athletes.filter(a => {
+      const athleteConf = a.conference || 'Other';
+      return athleteConf === st.conference;
+    });
+  }
+
+  if (st.teamQ) {
+    athletes = athletes.filter(a => a.school.toLowerCase().includes(st.teamQ));
+  }
+
+  // Group by event, sort, assign rank + points
+  const byEvent = {};
+  athletes.forEach(a => {
+    if (!byEvent[a.event]) byEvent[a.event] = [];
+    byEvent[a.event].push(a);
+  });
+
+  let result = [];
+  Object.keys(byEvent).forEach(ev => {
+    let group = byEvent[ev];
+    const lib = group[0].lower_is_better;
+    const key = st.perfType === 'personal_best' ? 'pb_raw' : 'sb_raw';
+    group.sort((a, b) => lib ? a[key] - b[key] : b[key] - a[key]);
+    
+    // Apply limit if specified (only show top N per event)
+    if (st.limit && st.limit > 0) {
+      group = group.slice(0, st.limit);
+    }
+    
+    group.forEach((a, i) => {
+      a._displayRank = i + 1;  // Display rank shows actual position
+      // For points, only count athletes who aren't secondary teams
+      // Count how many scoring athletes are ahead of this one
+      let scoringPosition = 1;
+      for (let j = 0; j < i; j++) {
+        // Treat undefined as false (not a secondary team)
+        if (!group[j].is_secondary_team) {
+          scoringPosition++;
+        }
+      }
+      // Check if this is a secondary relay team (B/C team) - they get 0 points
+      // Treat undefined as false (not a secondary team)
+      if (a.is_secondary_team === true) {
+        a._points = 0;
+      } else {
+        a._points = SCORE_MAP[scoringPosition] || 0;
+      }
+    });
+    result = result.concat(group);
+  });
+
+  return result;
+}
+
+function renderAthletes() {
+  const athletes = getFilteredAthletes(athleteState);
+
+  // Title
+  const evLabel = athleteState.event !== 'All' ? athleteState.event :
+                  athleteState.category !== 'All' ? athleteState.category : 'All Events';
+  elA.title.innerHTML = `${athleteState.gender} — <span>${evLabel}</span>`;
+  elA.count.textContent   = `${athletes.length} athlete${athletes.length !== 1 ? 's' : ''}`;
+
+  if (athletes.length === 0) {
+    elA.noRes.style.display = 'block';
+    elA.body.innerHTML = '';
+  } else {
+    elA.noRes.style.display = 'none';
+    
+    // Get 2024 qualifying mark for this event (if available)
+    const qualMark2024 = athleteState.event !== 'All' && NCAA_2024_QUALIFYING_MARKS[currentSeason]?.[athleteState.gender]?.[athleteState.event];
+    const is12QualifyEvent = athleteState.event === '4x400m Relay' || athleteState.event === 'Distance Medley Relay';
+    const qualText = is12QualifyEvent ? 'Top 12 Qualify for Nationals' : 'Top 16 Qualify for Nationals';
+    
+    // Build table HTML with qualifying line
+    let html = '';
+    let cutoffInserted = false;
+    
+    athletes.forEach((a, idx) => {
+      const rankClass    = a._displayRank <= 3 ? ` rank-${a._displayRank}` : '';
+      const rankNumClass = a._displayRank === 1 ? 'top1' : a._displayRank === 2 ? 'top2' : a._displayRank === 3 ? 'top3' : '';
+      const perfVal      = athleteState.perfType === 'personal_best' ? a.personal_best : a.season_best;
+      const ptsClass     = a._points === 0 ? 'zero' : '';
+      
+      // Check if we should insert cutoff line BEFORE this athlete
+      // (when this athlete is first one to not meet the 2024 standard)
+      if (qualMark2024 && !cutoffInserted && idx > 0) {
+        const prevAthlete = athletes[idx - 1];
+        const prevRaw = prevAthlete.pb_raw || prevAthlete.sb_raw;
+        const currentRaw = a.pb_raw || a.sb_raw;
+        
+        // For track events (lower is better), cutoff when current athlete is SLOWER than 2024 mark
+        // For field events (higher is better), cutoff when current athlete is SHORTER than 2024 mark
+        const shouldInsertCutoff = a.lower_is_better 
+          ? (prevRaw <= qualMark2024 && currentRaw > qualMark2024)  // Track: previous was fast enough, current is too slow
+          : (prevRaw >= qualMark2024 && currentRaw < qualMark2024); // Field: previous was far enough, current is too short
+        
+        if (shouldInsertCutoff) {
+          const qualMarkFormatted = prevAthlete.lower_is_better 
+            ? (qualMark2024 >= 60 ? `${Math.floor(qualMark2024 / 60)}:${(qualMark2024 % 60).toFixed(2).padStart(5, '0')}` : qualMark2024.toFixed(2))
+            : qualMark2024.toFixed(2);
+          
+          html += `<tr class="ncaa-cutoff-row">
+            <td colspan="7">
+              <div class="ncaa-cutoff-line">
+                <span class="ncaa-cutoff-text">${qualText} | 2024 Cutoff: ${qualMarkFormatted} ${a.unit === 's' ? '' : a.unit}</span>
+              </div>
+            </td>
+          </tr>`;
+          cutoffInserted = true;
+        }
+      }
+      
+      // Highlight Arkansas athletes in red
+      const isArkansas = a.school === 'Arkansas';
+      const nameColor = isArkansas ? '#9d2235' : 'var(--text-bright)';
+      const nameWeight = isArkansas ? '900' : 'normal';
+      
+      html += `<tr class="${rankClass}">
+        <td><span class="rank-num ${rankNumClass}">${a._displayRank}</span></td>
+        <td><strong style="color:${nameColor};font-weight:${nameWeight};">${a.name}</strong></td>
+        <td style="color:${isArkansas ? '#9d2235' : 'var(--text)'};">${a.school}</td>
+        <td class="center"><span class="year-badge ${a.year.toLowerCase()}">${a.year}</span></td>
+        <td style="color:var(--text-dim);">${a.event}</td>
+        <td class="right"><span class="perf-val">${perfVal}</span> <span style="font-size:0.75rem;color:var(--text-dim);">${a.unit === 's' ? '' : a.unit}</span></td>
+        <td class="right center"><span class="pts-badge ${ptsClass}">${a._points}</span></td>
+      </tr>`;
+    });
+    
+    elA.body.innerHTML = html;
+  }
+}
+
+// ============================================================
+// ===== TEAM PAGE STATE + LOGIC =====
+// ============================================================
+let teamState = {
+  gender:   'Men',
+  conference: 'All',
+  category: 'All',
+  event:    'All',
+  perfType: 'personal_best',
+  teamQ:    '',
+  limit:    50
+};
+
+// DOM refs — team page
+const elT = {
+  gender:   document.getElementById('teamFilterGender'),
+  conference: document.getElementById('teamFilterConference'),
+  category: document.getElementById('teamFilterCategory'),
+  event:    document.getElementById('teamFilterEvent'),
+  limit:    document.getElementById('teamFilterLimit'),
+  search:   document.getElementById('teamSearchSchool'),
+  // perfBtns: document.getElementById('teamPerfToggle').querySelectorAll('button'), // Removed - performance toggle removed
+  body:     document.getElementById('teamPageBody'),
+  title:    document.getElementById('teamPageTitle'),
+  count:    document.getElementById('teamPageCount'),
+  noRes:    document.getElementById('noTeamPageResults')
+};
+
+// Listeners — team page
+elT.gender.addEventListener('change', () => {
+  teamState.gender   = elT.gender.value;
+  teamState.event    = 'All';
+  populateTeamEventDropdown();
+  renderTeams();
+});
+elT.conference.addEventListener('change', () => {
+  teamState.conference = elT.conference.value;
+  renderTeams();
+});
+elT.category.addEventListener('change', () => {
+  teamState.category = elT.category.value;
+  teamState.event    = 'All';
+  populateTeamEventDropdown();
+  renderTeams();
+});
+elT.event.addEventListener('change', () => {
+  teamState.event = elT.event.value;
+  renderTeams();
+});
+elT.limit.addEventListener('change', () => {
+  teamState.limit = parseInt(elT.limit.value, 10);
+  renderTeams();
+});
+elT.search.addEventListener('input', () => {
+  teamState.teamQ = elT.search.value.trim().toLowerCase();
+  renderTeams();
+});
+// Performance type toggle removed - now only showing season best marks
+// elT.perfBtns.forEach(btn => {
+//   btn.addEventListener('click', () => {
+//     elT.perfBtns.forEach(b => b.classList.remove('active'));
+//     btn.classList.add('active');
+//     teamState.perfType = btn.dataset.perf;
+//     renderTeams();
+//   });
+// });
+
+function populateTeamEventDropdown() {
+  const events = Object.keys(athleteData[currentSeason][teamState.gender]);
+  elT.event.innerHTML = '<option value="All">All Events</option>';
+  events.forEach(ev => {
+    const eventData = athleteData[currentSeason][teamState.gender][ev];
+    // Skip empty events
+    if (!eventData || eventData.length === 0) return;
+    
+    if (teamState.category !== 'All') {
+      const sample = eventData[0];
+      if (sample && sample.category !== teamState.category) return;
+    }
+    const opt = document.createElement('option');
+    opt.value = ev; opt.textContent = ev;
+    elT.event.appendChild(opt);
+  });
+  elT.event.value = 'All';
+}
+
+function renderTeams() {
+  // Get ALL athletes (no school search yet — we filter teams after aggregation)
+  const allAthletes = getFilteredAthletes({
+    gender:   teamState.gender,
+    conference: teamState.conference,  // Add conference filter
+    category: teamState.category,
+    event:    teamState.event,
+    perfType: teamState.perfType,
+    teamQ:    '',                      // don't filter athletes; we filter the team list instead
+    limit:    teamState.limit          // Add limit
+  });
+
+  // Aggregate by school
+  const teamMap = {};
+  allAthletes.forEach(a => {
+    if (!teamMap[a.school]) teamMap[a.school] = {
+      totalPts: 0,
+      scoredAthletes: 0,
+      eventsScored: new Set(),
+      bestEvent: null,
+      bestEventPts: 0
+    };
+    const t = teamMap[a.school];
+    t.totalPts += a._points;
+    if (a._points > 0) {
+      t.scoredAthletes++;
+      t.eventsScored.add(a.event);
+      // Track which single event gave this team the most points
+      // (sum points per event for this school)
+    }
+  });
+
+  // Second pass: find best single event per team
+  const teamEventPts = {};
+  allAthletes.forEach(a => {
+    if (a._points === 0) return;
+    const key = a.school + '|||' + a.event;
+    teamEventPts[key] = (teamEventPts[key] || 0) + a._points;
+  });
+  Object.keys(teamEventPts).forEach(key => {
+    const [school, event] = key.split('|||');
+    const t = teamMap[school];
+    if (teamEventPts[key] > t.bestEventPts) {
+      t.bestEventPts = teamEventPts[key];
+      t.bestEvent    = event;
+    }
+  });
+
+  // Build sorted array
+  let teams = Object.keys(teamMap).map(name => ({
+    name,
+    totalPts:       teamMap[name].totalPts,
+    scoredAthletes: teamMap[name].scoredAthletes,
+    eventsScored:   teamMap[name].eventsScored.size,
+    bestEvent:      teamMap[name].bestEvent,
+    bestEventPts:   teamMap[name].bestEventPts
+  }));
+  teams.sort((a, b) => b.totalPts - a.totalPts);
+
+  // Now apply the school search filter on the team list
+  if (teamState.teamQ) {
+    teams = teams.filter(t => t.name.toLowerCase().includes(teamState.teamQ));
+  }
+
+  // Only show teams that scored at least 1 point (unless searching)
+  const displayTeams = teamState.teamQ ? teams : teams.filter(t => t.totalPts > 0);
+
+  // Title
+  const evLabel = teamState.event !== 'All' ? teamState.event :
+                  teamState.category !== 'All' ? teamState.category : 'All Events';
+  elT.title.innerHTML = `${teamState.gender} — <span>Team Rankings · ${evLabel}</span>`;
+  elT.count.textContent = `${displayTeams.length} team${displayTeams.length !== 1 ? 's' : ''}`;
+
+  if (displayTeams.length === 0) {
+    elT.noRes.style.display = 'block';
+    elT.body.innerHTML = '';
+  } else {
+    elT.noRes.style.display = 'none';
+    elT.body.innerHTML = displayTeams.map((t, i) => {
+      const rank         = i + 1;
+      const rankClass    = rank <= 3 ? ` rank-${rank}` : '';
+      const rankNumClass = rank === 1 ? 'top1' : rank === 2 ? 'top2' : rank === 3 ? 'top3' : '';
+      const bestEvStr    = t.bestEvent ? `${t.bestEvent} (${t.bestEventPts} pts)` : '—';
+      const isArkansas   = t.name === 'Arkansas';
+      const nameColor    = isArkansas ? '#9d2235' : 'var(--text-bright)';
+      const nameWeight   = isArkansas ? '900' : 'bold';
+      return `<tr class="${rankClass}">
+        <td><span class="rank-num ${rankNumClass}">${rank}</span></td>
+        <td><strong style="color:${nameColor};font-weight:${nameWeight};">${t.name}</strong></td>
+        <td class="right"><strong style="color:var(--accent);font-family:'Barlow Condensed',sans-serif;font-size:1.05rem;">${t.totalPts}</strong></td>
+        <td class="right">${t.scoredAthletes}</td>
+        <td class="right">${t.eventsScored}</td>
+        <td class="right" style="color:var(--text-dim);font-size:0.85rem;">${bestEvStr}</td>
+      </tr>`;
+    }).join('');
+  }
+}
+
+// ============================================================
+// ===== COACHES SCORING PAGE STATE + LOGIC =====
+// ============================================================
+
+// The coaches page state
+let coachState = {
+  gender:   'Men',
+  conference: 'All',
+  category: 'All',
+  event:    null,  // will be set to the first event on init
+  limit:    50
+};
+
+// EDITS STORE: persists user overrides across event switches.
+// Structure: { "Men|||100m|||athleteIndex": { place: 3, mark: "10.25" }, ... }
+// "athleteIndex" is the athlete's original index (0-49) in the source data array.
+const coachEdits = {};
+
+// CUSTOM ATHLETES: stores manually added athletes
+// Structure: { "Men|||100m": [{ name, school, year, mark, place, customId }, ...] }
+const customAthletes = {};
+
+function coachEditKey(season, gender, event, origIndex) {
+  return season + '|||' + gender + '|||' + event + '|||' + origIndex;
+}
+
+// DOM refs — coaches page
+const elC = {
+  gender:   document.getElementById('coachFilterGender'),
+  conference: document.getElementById('coachFilterConference'),
+  category: document.getElementById('coachFilterCategory'),
+  event:    document.getElementById('coachFilterEvent'),
+  limit:    document.getElementById('coachFilterLimit'),
+  body:     document.getElementById('coachesBody'),
+  title:    document.getElementById('coachesTitle'),
+  sidebar:  document.getElementById('coachesSidebar'),
+  sidebarEv:document.getElementById('coachSidebarEvent'),
+  markHdr:  document.getElementById('coachMarkHeader'),
+  resetBtn: document.getElementById('coachResetBtn')
+};
+
+// Listeners — coaches page
+elC.gender.addEventListener('change', () => {
+  coachState.gender   = elC.gender.value;
+  coachState.category = 'All';
+  elC.category.value  = 'All';
+  populateCoachEventDropdown();
+  coachState.event = elC.event.value;
+  renderCoaches();
+});
+elC.conference.addEventListener('change', () => {
+  coachState.conference = elC.conference.value;
+  renderCoaches();
+});
+elC.category.addEventListener('change', () => {
+  coachState.category = elC.category.value;
+  populateCoachEventDropdown();
+  coachState.event = elC.event.value;
+  renderCoaches();
+});
+elC.event.addEventListener('change', () => {
+  coachState.event = elC.event.value;
+  renderCoaches();
+});
+elC.limit.addEventListener('change', () => {
+  coachState.limit = parseInt(elC.limit.value, 10);
+  renderCoaches();
+});
+
+// Reset button — clears edits for the current season + gender + event
+elC.resetBtn.addEventListener('click', () => {
+  const prefix = currentSeason + '|||' + coachState.gender + '|||' + coachState.event + '|||';
+  Object.keys(coachEdits).forEach(k => {
+    if (k.startsWith(prefix)) delete coachEdits[k];
+  });
+  
+  // Also clear custom athletes for this event
+  const customKey = `${coachState.gender}|||${coachState.event}`;
+  if (customAthletes[customKey]) {
+    delete customAthletes[customKey];
+  }
+  
+  renderCoaches();
+});
+
+function populateCoachEventDropdown() {
+  const events = Object.keys(athleteData[currentSeason][coachState.gender]);
+  elC.event.innerHTML = '';
+  events.forEach(ev => {
+    const eventData = athleteData[currentSeason][coachState.gender][ev];
+    // Skip empty events
+    if (!eventData || eventData.length === 0) return;
+    
+    if (coachState.category !== 'All') {
+      const sample = eventData[0];
+      if (sample && sample.category !== coachState.category) return;
+    }
+    const opt = document.createElement('option');
+    opt.value = ev; opt.textContent = ev;
+    elC.event.appendChild(opt);
+  });
+  // Default to first option
+  if (elC.event.options.length > 0) {
+    elC.event.value = elC.event.options[0].value;
+  }
+}
+
+// ---- Build the working list for the current event, merging in any edits ----
+function getCoachAthletes() {
+  const gender = coachState.gender;
+  const event  = coachState.event;
+  const limit  = coachState.limit || 50;
+  let source = athleteData[currentSeason][gender][event];  // original athlete array
+  if (!source) return [];
+
+  // ELITE 10 MODE: Filter to only top 10 teams
+  // IMPORTANT: Preserve original indices BEFORE filtering!
+  let sourceWithIndices = source.map((a, idx) => ({ athlete: a, originalIndex: idx }));
+  
+  if (elite10Mode) {
+    const top10Teams = getTop10Teams(gender);
+    sourceWithIndices = sourceWithIndices.filter(item => top10Teams.includes(item.athlete.school));
+  }
+
+  // Apply limit to source data (only use top N from TFRRS data)
+  sourceWithIndices = sourceWithIndices.slice(0, limit);
+
+  if (sourceWithIndices.length === 0) return [];
+  const lib = sourceWithIndices[0].athlete.lower_is_better;
+
+  // Map each source athlete, overlaying any saved edits
+  // CRITICAL: Use originalIndex for the key, not the filtered array index!
+  let athletes = sourceWithIndices.map((item, filteredIndex) => {
+    const a = item.athlete;
+    const origIndex = item.originalIndex;  // Use ORIGINAL index from before filtering
+    const key  = coachEditKey(currentSeason, gender, event, origIndex);
+    const edit = coachEdits[key];
+    return {
+      ...a,
+      _origIndex: origIndex,  // Store original index
+      // If edited, use the edited values; otherwise use originals
+      _place:  edit ? edit.place : (filteredIndex + 1),  // Display place based on filtered position
+      _mark:   edit ? edit.mark  : a.personal_best,
+      _manualPlace: edit ? edit.manualPlace : false
+    };
+  });
+
+  // Filter by conference if specified
+  if (coachState.conference && coachState.conference !== 'All') {
+    athletes = athletes.filter(a => {
+      const athleteConf = a.conference || 'Other';  // Treat missing conference as "Other"
+      return athleteConf === coachState.conference;
+    });
+  }
+
+  // Add custom athletes for this event
+  const customKey = `${gender}|||${event}`;
+  if (customAthletes && customAthletes[customKey] && Array.isArray(customAthletes[customKey])) {
+    customAthletes[customKey].forEach(custom => {
+      athletes.push({
+        name: custom.name,
+        school: custom.school,
+        year: custom.year,
+        gender: gender,
+        event: event,
+        personal_best: custom.mark,
+        _origIndex: custom.customId,  // Use custom ID as "origIndex"
+        _place: custom.place,
+        _mark: custom.mark,
+        _manualPlace: true,  // Custom athletes are always manually placed
+        _isCustom: true,  // Flag to identify custom athletes
+        lower_is_better: lib,
+        unit: source[0].unit,
+        is_secondary_team: false  // Custom athletes aren't secondary teams
+      });
+    });
+  }
+
+  // Sort by the current place assignment
+  athletes.sort((a, b) => a._place - b._place);
+
+  // Assign points based on scoring position (excluding B/C teams)
+  athletes.forEach((a, idx) => {
+    // Secondary relay teams (B/C teams) get 0 points
+    if (a.is_secondary_team === true) {
+      a._points = 0;
+    } else {
+      // Count how many A teams are ahead of this athlete
+      let scoringPosition = 1;
+      for (let j = 0; j < idx; j++) {
+        if (athletes[j].is_secondary_team !== true) {
+          scoringPosition++;
+        }
+      }
+      a._points = SCORE_MAP[scoringPosition] || 0;
+    }
+  });
+
+  return athletes;
+}
+
+// ---- Main render for coaches page ----
+function renderCoaches() {
+  const event    = coachState.event;
+  const gender   = coachState.gender;
+  const athletes = getCoachAthletes();
+  if (!athletes.length) return;
+
+  const lib = athletes[0].lower_is_better;
+  const unit = athletes[0].unit;
+
+  // Titles
+  elC.title.innerHTML = `${gender} — <span>${event}</span>`;
+  elC.markHdr.textContent = lib ? 'Mark (time)' : 'Mark (dist)';
+
+  // Get 2024 qualifying mark for this event
+  const qualMark2024 = NCAA_2024_QUALIFYING_MARKS[currentSeason]?.[gender]?.[event];
+  const is12QualifyEvent = event === '4x400m Relay' || event === 'Distance Medley Relay';
+  const qualText = is12QualifyEvent ? 'Top 12 Qualify for Nationals' : 'Top 16 Qualify for Nationals';
+
+  // ---- ATHLETE TABLE ----
+  let html = '';
+  let cutoffInserted = false;
+  
+  athletes.forEach((a, i) => {
+    const rankClass    = a._place <= 3 ? ` rank-${a._place}` : '';
+    const rankNumClass = a._place === 1 ? 'top1' : a._place === 2 ? 'top2' : a._place === 3 ? 'top3' : '';
+    const ptsClass     = a._points === 0 ? 'zero' : '';
+
+    const lockIcon = a._manualPlace 
+      ? `<span class="lock-toggle locked" data-origindex="${a._origIndex}" title="Click to unlock (auto-rank by mark)">&#128274;</span>`
+      : `<span class="lock-toggle unlocked" data-origindex="${a._origIndex}" title="Click to lock place">&#128275;</span>`;
+    
+    // Check if we should insert cutoff line BEFORE this athlete
+    if (qualMark2024 && !cutoffInserted && i > 0) {
+      const prevAthlete = athletes[i - 1];
+      
+      // Parse current and previous marks to compare with 2024 standard
+      const parseMarkToRaw = (markStr) => {
+        if (typeof markStr === 'number') return markStr;
+        const clean = String(markStr).replace(/[^\d.:-]/g, '');
+        if (clean.includes(':')) {
+          const parts = clean.split(':');
+          return parseFloat(parts[0]) * 60 + parseFloat(parts[1] || 0);
+        }
+        return parseFloat(clean) || 0;
+      };
+      
+      const prevRaw = parseMarkToRaw(prevAthlete._mark);
+      const currentRaw = parseMarkToRaw(a._mark);
+      
+      const shouldInsertCutoff = lib 
+        ? (prevRaw <= qualMark2024 && currentRaw > qualMark2024)  // Track: previous was fast enough, current is too slow
+        : (prevRaw >= qualMark2024 && currentRaw < qualMark2024); // Field: previous was far enough, current is too short
+      
+      if (shouldInsertCutoff) {
+        const qualMarkFormatted = lib 
+          ? (qualMark2024 >= 60 ? `${Math.floor(qualMark2024 / 60)}:${(qualMark2024 % 60).toFixed(2).padStart(5, '0')}` : qualMark2024.toFixed(2))
+          : qualMark2024.toFixed(2);
+        
+        html += `<tr class="ncaa-cutoff-row">
+          <td colspan="6">
+            <div class="ncaa-cutoff-line">
+              <span class="ncaa-cutoff-text">${qualText} | 2024 Cutoff: ${qualMarkFormatted} ${unit === 's' ? '' : unit}</span>
+            </div>
+          </td>
+        </tr>`;
+        cutoffInserted = true;
+      }
+    }
+    
+    // Highlight Arkansas athletes
+    const isArkansas = a.school === 'Arkansas';
+    const nameColor = isArkansas ? '#9d2235' : 'var(--text-bright)';
+    const schoolColor = isArkansas ? '#9d2235' : 'var(--text-dim)';
+    const nameWeight = isArkansas ? '900' : 'bold';
+    
+    html += `<tr class="${rankClass}" data-origindex="${a._origIndex}" draggable="true">
+      <td>
+        <span class="drag-handle" title="Drag to reorder">&#8942;&#8942;</span>
+        ${lockIcon}
+        <span class="rank-num ${rankNumClass}">${a._place}</span>
+      </td>
+      <td>
+        <strong style="color:${nameColor};font-weight:${nameWeight};">${a.name}</strong>
+        ${a._isCustom ? '<span style="background:var(--accent);color:#fff;font-size:0.65rem;padding:2px 6px;border-radius:3px;margin-left:6px;font-weight:700;">CUSTOM</span>' : ''}
+        <br><span style="font-size:0.75rem;color:${schoolColor};">${a.school} · ${a.year}</span>
+      </td>
+      <td style="color:${schoolColor};">${a.school}</td>
+      <td class="center">
+        <input type="number" class="coaches-input place-input"
+               data-field="place" data-origindex="${a._origIndex}"
+               value="${a._place}" min="1" max="50" />
+      </td>
+      <td class="right">
+        <input type="text" class="coaches-input mark-input"
+               data-field="mark" data-origindex="${a._origIndex}"
+               value="${a._mark}" />
+      </td>
+      <td class="right center"><span class="pts-badge ${ptsClass}">${a._points}</span></td>
+    </tr>`;
+  });
+  
+  elC.body.innerHTML = html;
+
+  // Attach input listeners (fire on blur or Enter key)
+  elC.body.querySelectorAll('.coaches-input').forEach(input => {
+    // Trigger on blur (when user clicks away)
+    input.addEventListener('change', onCoachInputChange);
+    
+    // Trigger on Enter key
+    input.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        input.blur();  // This triggers the 'change' event
+      }
+    });
+  });
+
+  // Attach lock toggle handlers
+  elC.body.querySelectorAll('.lock-toggle').forEach(toggle => {
+    toggle.addEventListener('click', (e) => {
+      const origIndex = parseInt(toggle.dataset.origindex, 10);
+      const gender = coachState.gender;
+      const event = coachState.event;
+      const key = coachEditKey(currentSeason, gender, event, origIndex);
+      const source = athleteData[currentSeason][gender][event];
+
+      // Initialize edit if it doesn't exist
+      if (!coachEdits[key]) {
+        const orig = source[origIndex];
+        coachEdits[key] = { place: origIndex + 1, mark: orig.personal_best, manualPlace: false };
+      }
+
+      // Toggle the lock
+      coachEdits[key].manualPlace = !coachEdits[key].manualPlace;
+
+      // If unlocking, trigger auto-rerank
+      if (!coachEdits[key].manualPlace) {
+        autoRerankByMarks();
+      } else {
+        // Just re-render to show the new lock state
+        renderCoaches();
+      }
+    });
+  });
+
+  // ---- DRAG-AND-DROP HANDLERS ----
+  let draggedRow = null;
+  
+  elC.body.querySelectorAll('tr[draggable="true"]').forEach(row => {
+    row.addEventListener('dragstart', (e) => {
+      draggedRow = row;
+      row.classList.add('dragging');
+      e.dataTransfer.effectAllowed = 'move';
+    });
+    
+    row.addEventListener('dragend', (e) => {
+      row.classList.remove('dragging');
+      document.querySelectorAll('.drag-over').forEach(r => r.classList.remove('drag-over'));
+      draggedRow = null;
+    });
+    
+    row.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      e.dataTransfer.dropEffect = 'move';
+      
+      if (draggedRow && row !== draggedRow) {
+        // Remove drag-over from all rows
+        document.querySelectorAll('.drag-over').forEach(r => r.classList.remove('drag-over'));
+        // Add to current row
+        row.classList.add('drag-over');
+      }
+    });
+    
+    row.addEventListener('drop', (e) => {
+      e.preventDefault();
+      
+      if (draggedRow && row !== draggedRow) {
+        const draggedOrigIndex = parseInt(draggedRow.dataset.origindex, 10);
+        const targetOrigIndex = parseInt(row.dataset.origindex, 10);
+        
+        const gender = coachState.gender;
+        const event = coachState.event;
+        const source = athleteData[currentSeason][gender][event];
+        
+        // Get current places
+        const draggedKey = coachEditKey(currentSeason, gender, event, draggedOrigIndex);
+        const targetKey = coachEditKey(currentSeason, gender, event, targetOrigIndex);
+        
+        if (!coachEdits[draggedKey]) {
+          coachEdits[draggedKey] = { place: draggedOrigIndex + 1, mark: source[draggedOrigIndex].personal_best, manualPlace: false };
+        }
+        if (!coachEdits[targetKey]) {
+          coachEdits[targetKey] = { place: targetOrigIndex + 1, mark: source[targetOrigIndex].personal_best, manualPlace: false };
+        }
+        
+        const draggedPlace = coachEdits[draggedKey].place;
+        const targetPlace = coachEdits[targetKey].place;
+        
+        // Set dragged athlete to target's place (this will trigger auto-shift)
+        coachEdits[draggedKey].place = targetPlace;
+        coachEdits[draggedKey].manualPlace = true;
+        
+        // Manually trigger the shift logic
+        if (targetPlace !== draggedPlace) {
+          if (targetPlace < draggedPlace) {
+            // Moving up: push everyone in range down by 1
+            source.forEach((athlete, idx) => {
+              const k = coachEditKey(currentSeason, gender, event, idx);
+              if (!coachEdits[k]) {
+                coachEdits[k] = { place: idx + 1, mark: athlete.personal_best, manualPlace: false };
+              }
+              const currentPlace = coachEdits[k].place;
+              if (idx !== draggedOrigIndex && currentPlace >= targetPlace && currentPlace < draggedPlace) {
+                coachEdits[k].place = currentPlace + 1;
+              }
+            });
+          } else {
+            // Moving down: pull everyone in range up by 1
+            source.forEach((athlete, idx) => {
+              const k = coachEditKey(currentSeason, gender, event, idx);
+              if (!coachEdits[k]) {
+                coachEdits[k] = { place: idx + 1, mark: athlete.personal_best, manualPlace: false };
+              }
+              const currentPlace = coachEdits[k].place;
+              if (idx !== draggedOrigIndex && currentPlace > draggedPlace && currentPlace <= targetPlace) {
+                coachEdits[k].place = currentPlace - 1;
+              }
+            });
+          }
+        }
+        
+        renderCoaches();
+      }
+      
+      row.classList.remove('drag-over');
+    });
+  });
+
+  // ---- SIDEBAR ----
+  renderCoachesSidebar(athletes);
+}
+
+// ---- Auto-rerank all athletes by their current marks ----
+function autoRerankByMarks() {
+  const gender = coachState.gender;
+  const event = coachState.event;
+  const source = athleteData[currentSeason][gender][event];
+  const lib = source[0].lower_is_better;
+
+  // Build full athlete list with current marks
+  let allAthletes = source.map((a, idx) => {
+    const k = coachEditKey(currentSeason, gender, event, idx);
+    const edit = coachEdits[k];
+    return {
+      origIndex: idx,
+      mark: edit ? edit.mark : a.personal_best,
+      manualPlace: edit ? edit.manualPlace : false,
+      school: a.school
+    };
+  });
+
+  // Parse marks to numbers for sorting
+  allAthletes.forEach(a => {
+    let raw = String(a.mark).replace(/[^\d.:]/g, '');
+    // Handle MM:SS.ss format
+    if (raw.includes(':')) {
+      const parts = raw.split(':');
+      a._sortValue = parseFloat(parts[0]) * 60 + parseFloat(parts[1] || 0);
+    } else {
+      a._sortValue = parseFloat(raw) || 999999;
+    }
+  });
+
+  // Sort by mark (lower is better for track, higher for field)
+  allAthletes.sort((a, b) => lib ? a._sortValue - b._sortValue : b._sortValue - a._sortValue);
+
+  // Auto-assign sequential places ONLY to athletes without manual locks
+  let autoPlace = 1;
+  allAthletes.forEach(a => {
+    const k = coachEditKey(currentSeason, gender, event, a.origIndex);
+    if (!coachEdits[k]) {
+      coachEdits[k] = { place: autoPlace, mark: a.mark, manualPlace: false };
+    } else if (!a.manualPlace) {
+      // Auto-ranked athlete: give them the next sequential place
+      coachEdits[k].place = autoPlace;
+      coachEdits[k].manualPlace = false;
+    }
+    // Manual locks skip the auto-place counter
+    if (!a.manualPlace) autoPlace++;
+  });
+
+  // Full re-render
+  renderCoaches();
+}
+
+// ---- Handler for any edit in the coaches table ----
+function onCoachInputChange(e) {
+  const input     = e.target;
+  const field     = input.dataset.field;
+  const origIndex = input.dataset.origindex;  // Don't parse - could be string (customId)
+  const gender    = coachState.gender;
+  const event     = coachState.event;
+  
+  // Check if this is a custom athlete (origIndex starts with "custom_")
+  const isCustom = typeof origIndex === 'string' && origIndex.startsWith('custom_');
+  
+  if (isCustom) {
+    // Handle custom athlete editing
+    const customKey = `${gender}|||${event}`;
+    const customAthlete = customAthletes[customKey]?.find(a => a.customId === origIndex);
+    
+    if (!customAthlete) {
+      console.error('Custom athlete not found:', origIndex);
+      return;
+    }
+    
+    if (field === 'place') {
+      let newPlace = parseInt(input.value, 10);
+      if (isNaN(newPlace) || newPlace < 1) newPlace = 1;
+      if (newPlace > 100) newPlace = 100;
+      
+      const oldPlace = customAthlete.place;
+      
+      // AUTO-SHIFT: Move other athletes to make room
+      if (newPlace !== oldPlace) {
+        const source = athleteData[currentSeason][gender][event];
+        
+        // Initialize all source athletes in coachEdits
+        source.forEach((athlete, idx) => {
+          const k = coachEditKey(currentSeason, gender, event, idx);
+          if (!coachEdits[k]) {
+            coachEdits[k] = { 
+              place: idx + 1, 
+              mark: athlete.personal_best, 
+              manualPlace: false 
+            };
+          }
+        });
+        
+        // Shift TFRRS athletes
+        if (newPlace < oldPlace) {
+          // Moving up: push everyone in range down by 1
+          source.forEach((athlete, idx) => {
+            const k = coachEditKey(currentSeason, gender, event, idx);
+            const currentPlace = coachEdits[k].place;
+            if (currentPlace >= newPlace && currentPlace < oldPlace) {
+              coachEdits[k].place = currentPlace + 1;
+            }
+          });
+          
+          // Shift other custom athletes
+          customAthletes[customKey].forEach(ca => {
+            if (ca.customId !== origIndex && ca.place >= newPlace && ca.place < oldPlace) {
+              ca.place = ca.place + 1;
+            }
+          });
+        } else {
+          // Moving down: pull everyone in range up by 1
+          source.forEach((athlete, idx) => {
+            const k = coachEditKey(currentSeason, gender, event, idx);
+            const currentPlace = coachEdits[k].place;
+            if (currentPlace > oldPlace && currentPlace <= newPlace) {
+              coachEdits[k].place = currentPlace - 1;
+            }
+          });
+          
+          // Shift other custom athletes
+          customAthletes[customKey].forEach(ca => {
+            if (ca.customId !== origIndex && ca.place > oldPlace && ca.place <= newPlace) {
+              ca.place = ca.place - 1;
+            }
+          });
+        }
+      }
+      
+      customAthlete.place = newPlace;
+      input.value = newPlace;
+      renderCoaches();
+      
+    } else if (field === 'mark') {
+      // Update custom athlete's mark
+      customAthlete.mark = input.value;
+      // Don't auto-rerank custom athletes - they stay where they are
+      renderCoaches();
+    }
+    
+  } else {
+    // Handle TFRRS athlete editing (original logic)
+    const origIndexNum = parseInt(origIndex, 10);
+    const key = coachEditKey(currentSeason, gender, event, origIndexNum);
+    const source = athleteData[currentSeason][gender][event];
+
+    // Ensure the edit object exists
+    if (!coachEdits[key]) {
+      const orig = source[origIndexNum];
+      coachEdits[key] = { place: origIndexNum + 1, mark: orig.personal_best, manualPlace: false };
+    }
+
+    if (field === 'place') {
+      // MANUAL PLACE EDIT — store as override and lock it
+      let newPlace = parseInt(input.value, 10);
+      if (isNaN(newPlace) || newPlace < 1) newPlace = 1;
+      if (newPlace > 50) newPlace = 50;
+      
+      const oldPlace = coachEdits[key] ? coachEdits[key].place : (origIndexNum + 1);
+      
+      // AUTO-SHIFT: Move other athletes to make room
+      if (newPlace !== oldPlace) {
+        // Initialize coachEdits for any athletes that don't have them yet
+        // IMPORTANT: Preserve existing edited places AND only initialize VISIBLE athletes!
+        
+        // Get the currently visible athletes (respects Elite 10 mode, limits, etc.)
+        const currentAthletes = getCoachAthletes();
+        const visibleOrigIndices = new Set(currentAthletes.map(a => a._origIndex));
+        
+        // Only initialize visible athletes
+        source.forEach((athlete, idx) => {
+          // Skip athletes not in the current view (Elite 10 filtering, etc.)
+          if (!visibleOrigIndices.has(idx)) return;
+          
+          const k = coachEditKey(currentSeason, gender, event, idx);
+          if (!coachEdits[k]) {
+            // Find this athlete's current place in the visible list
+            const currentAthlete = currentAthletes.find(a => a._origIndex === idx);
+            const currentPlace = currentAthlete ? currentAthlete._place : (idx + 1);
+            
+            coachEdits[k] = { 
+              place: currentPlace, 
+              mark: athlete.personal_best, 
+              manualPlace: false 
+            };
+          }
+        });
+        
+        const customKey = `${gender}|||${event}`;
+        
+        // Shift athletes between old and new positions
+        // IMPORTANT: Only shift VISIBLE athletes (those in visibleOrigIndices)
+        if (newPlace < oldPlace) {
+          // Moving up: push everyone in range down by 1
+          source.forEach((athlete, idx) => {
+            // Skip non-visible athletes in Elite 10 mode
+            if (!visibleOrigIndices.has(idx)) return;
+            
+            const k = coachEditKey(currentSeason, gender, event, idx);
+            if (!coachEdits[k]) return;  // Skip if not initialized
+            const currentPlace = coachEdits[k].place;
+            if (idx !== origIndexNum && currentPlace >= newPlace && currentPlace < oldPlace) {
+              coachEdits[k].place = currentPlace + 1;
+            }
+          });
+          
+          // Also shift custom athletes
+          if (customAthletes[customKey]) {
+            customAthletes[customKey].forEach(ca => {
+              if (ca.place >= newPlace && ca.place < oldPlace) {
+                ca.place = ca.place + 1;
+              }
+            });
+          }
+        } else {
+          // Moving down: pull everyone in range up by 1
+          source.forEach((athlete, idx) => {
+            // Skip non-visible athletes in Elite 10 mode
+            if (!visibleOrigIndices.has(idx)) return;
+            
+            const k = coachEditKey(currentSeason, gender, event, idx);
+            if (!coachEdits[k]) return;  // Skip if not initialized
+            const currentPlace = coachEdits[k].place;
+            if (idx !== origIndexNum && currentPlace > oldPlace && currentPlace <= newPlace) {
+              coachEdits[k].place = currentPlace - 1;
+            }
+          });
+          
+          // Also shift custom athletes
+          if (customAthletes[customKey]) {
+            customAthletes[customKey].forEach(ca => {
+              if (ca.place > oldPlace && ca.place <= newPlace) {
+                ca.place = ca.place - 1;
+              }
+            });
+          }
+        }
+      }
+      
+      coachEdits[key].place = newPlace;
+      coachEdits[key].manualPlace = true;  // editing place auto-locks it
+      input.value = newPlace;  // clamp visually
+      renderCoaches();
+    } else {
+      // MARK EDIT — store the new mark, then auto-rerank
+      coachEdits[key].mark = input.value;
+      autoRerankByMarks();
+    }
+  }
+}
+
+// ---- Render the live team sidebar — CUMULATIVE across ALL events (BOTH SEASONS) ----
+function renderCoachesSidebar(currentEventAthletes) {
+  // Show TOTAL team scores across ALL events for the CURRENT GENDER only
+  const teamMap = {};
+  const currentGender = coachState.gender;  // Only show current gender's scores
+  
+  // ELITE 10 MODE: Calculate top 10 teams from BOTH seasons combined
+  let top10Teams = null;
+  if (elite10Mode) {
+    const combinedTeamMap = {};
+    
+    // Calculate from BOTH seasons for accurate cumulative top 10
+    ['Indoor', 'Outdoor'].forEach(season => {
+      const genderData = athleteData[season][currentGender];
+      if (!genderData) return;
+      
+      Object.keys(genderData).forEach(event => {
+        const eventAthletes = genderData[event];
+        const lib = eventAthletes[0].lower_is_better;
+        const sorted = [...eventAthletes].sort((a, b) => {
+          const aVal = a.pb_raw || a.sb_raw;
+          const bVal = b.pb_raw || b.sb_raw;
+          return lib ? aVal - bVal : bVal - aVal;
+        });
+        
+        sorted.forEach((a, i) => {
+          if (!a.is_secondary_team) {
+            if (!combinedTeamMap[a.school]) {
+              combinedTeamMap[a.school] = { name: a.school, totalPts: 0 };
+            }
+            let scoringPosition = 1;
+            for (let j = 0; j < i; j++) {
+              if (!sorted[j].is_secondary_team) scoringPosition++;
+            }
+            const pts = SCORE_MAP[scoringPosition] || 0;
+            combinedTeamMap[a.school].totalPts += pts;
+          }
+        });
+      });
+    });
+    
+    top10Teams = Object.values(combinedTeamMap)
+      .sort((a, b) => b.totalPts - a.totalPts)
+      .slice(0, 10)
+      .map(t => t.name);
+  }
+
+  // Loop through both seasons, but only current gender
+  ['Indoor', 'Outdoor'].forEach(season => {
+    const genderData = athleteData[season][currentGender];  // Use current gender only
+    if (!genderData) return;  // Skip if no data for this season/gender
+    
+    Object.keys(genderData).forEach(event => {
+      const source = genderData[event];
+      
+      // Build a complete athlete list for this event (TFRRS + custom)
+      let allAthletes = [];
+      
+      // Add TFRRS athletes
+      source.forEach((athlete, origIndex) => {
+        // ELITE 10 MODE: Skip athletes not in top 10 teams
+        if (elite10Mode && !top10Teams.includes(athlete.school)) return;
+        
+        const key = coachEditKey(season, currentGender, event, origIndex);  // Use loop season variable
+        const edit = coachEdits[key];
+        const place = edit ? edit.place : (origIndex + 1);
+        
+        allAthletes.push({
+          school: athlete.school,
+          place: place,
+          is_secondary_team: athlete.is_secondary_team === true
+        });
+      });
+      
+      // Add custom athletes
+      const customKey = `${currentGender}|||${event}`;  // Use current gender
+      if (customAthletes && customAthletes[customKey]) {
+        customAthletes[customKey].forEach(customAthlete => {
+          // ELITE 10 MODE: Skip custom athletes not in top 10 teams
+          if (elite10Mode && !top10Teams.includes(customAthlete.school)) return;
+          
+          allAthletes.push({
+            school: customAthlete.school,
+            place: customAthlete.place,
+            is_secondary_team: false  // Custom athletes are never B/C teams
+          });
+        });
+      }
+      
+      // Sort by place
+      allAthletes.sort((a, b) => a.place - b.place);
+      
+      // Calculate points based on scoring position (excluding B/C teams)
+      allAthletes.forEach((athlete, idx) => {
+        if (athlete.is_secondary_team) {
+          // B/C teams get 0 points
+          athlete.points = 0;
+        } else {
+          // Count how many scoring athletes (non B/C) are ahead
+          let scoringPosition = 1;
+          for (let i = 0; i < idx; i++) {
+            if (!allAthletes[i].is_secondary_team) {
+              scoringPosition++;
+            }
+          }
+          athlete.points = SCORE_MAP[scoringPosition] || 0;
+        }
+      });
+      
+      // Add points to team totals
+      const evtKey = `${season}:${event}`;
+        allAthletes.forEach(athlete => {
+          const school = athlete.school;
+          const pts = athlete.points;
+          
+          if (!teamMap[school]) teamMap[school] = { totalPts: 0, eventBreakdown: {} };
+          teamMap[school].totalPts += pts;
+          if (!teamMap[school].eventBreakdown[evtKey]) teamMap[school].eventBreakdown[evtKey] = 0;
+          teamMap[school].eventBreakdown[evtKey] += pts;
+        });
+      });
+  });
+
+  // Sort teams by total points descending
+  let teams = Object.keys(teamMap)
+    .map(name => ({
+      name,
+      pts: teamMap[name].totalPts,
+      breakdown: teamMap[name].eventBreakdown
+    }))
+    .filter(t => t.pts > 0)
+    .sort((a, b) => b.pts - a.pts);
+
+  if (teams.length === 0) {
+    elC.sidebar.innerHTML = '<div style="padding:20px;text-align:center;color:var(--text-dim);font-size:0.85rem;">No teams have scored yet.</div>';
+    return;
+  }
+
+  // Render with cumulative totals + this event's contribution highlighted
+  const currentEvent = coachState.event;
+  const currentKey = `${currentSeason}:${currentEvent}`;
+  elC.sidebar.innerHTML = teams.map((t, i) => {
+    const rank = i + 1;
+    const rankClass    = rank <= 3 ? ` s-rank-${rank}` : '';
+    const rankNumClass = rank === 1 ? 'top1' : rank === 2 ? 'top2' : rank === 3 ? 'top3' : '';
+    const thisEventPts = t.breakdown[currentKey] || 0;
+    const ptsDisplay   = thisEventPts > 0 ? `${t.pts} <span style="color:var(--text-dim);font-size:0.75rem;">(+${thisEventPts})</span>` : t.pts;
+    return `<div class="sidebar-row${rankClass}">
+      <span class="s-rank ${rankNumClass}">${rank}</span>
+      <span class="s-name">${t.name}</span>
+      <span class="s-pts">${ptsDisplay}</span>
+    </div>`;
+  }).join('');
+}
+
+// ============================================================
+// ADD ATHLETE MODAL - Wait for DOM to be ready
+// ============================================================
+document.addEventListener('DOMContentLoaded', function() {
+  console.log('DOM loaded, setting up Add Athlete modal...');
+
+  const modal = document.getElementById('addAthleteModal');
+  const addAthleteBtn = document.getElementById('coachAddAthleteBtn');
+  const modalClose = document.getElementById('modalClose');
+  const modalCancel = document.getElementById('modalCancel');
+  const addAthleteForm = document.getElementById('addAthleteForm');
+
+  console.log('Modal elements:', { 
+    modal: modal ? 'found' : 'NOT FOUND', 
+    addAthleteBtn: addAthleteBtn ? 'found' : 'NOT FOUND',
+    modalClose: modalClose ? 'found' : 'NOT FOUND',
+    modalCancel: modalCancel ? 'found' : 'NOT FOUND',
+    addAthleteForm: addAthleteForm ? 'found' : 'NOT FOUND'
+  });
+
+  // Check if button exists and add click handler
+  if (addAthleteBtn) {
+    console.log('Add Athlete button found, attaching handler...');
+    addAthleteBtn.addEventListener('click', function(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      console.log('Add Athlete button clicked!');
+      if (modal) {
+        modal.classList.add('show');
+        console.log('Modal should now be visible');
+        // Pre-fill the next available place
+        try {
+          const athletes = getCoachAthletes();
+          const placeInput = document.getElementById('newAthletePlace');
+          if (placeInput) {
+            placeInput.value = athletes.length + 1;
+          }
+        } catch (e) {
+          console.error('Error getting athletes:', e);
+        }
+      } else {
+        console.error('Modal element not found!');
+      }
+    });
+  } else {
+    console.error('Add Athlete button not found! Looking for ID: coachAddAthleteBtn');
+  }
+
+  if (modalClose) {
+    modalClose.addEventListener('click', function() {
+      console.log('Close button clicked');
+      modal.classList.remove('show');
+      if (addAthleteForm) addAthleteForm.reset();
+    });
+  }
+
+  if (modalCancel) {
+    modalCancel.addEventListener('click', function() {
+      console.log('Cancel button clicked');
+      modal.classList.remove('show');
+      if (addAthleteForm) addAthleteForm.reset();
+    });
+  }
+
+  // Close modal when clicking outside
+  window.addEventListener('click', function(e) {
+    if (e.target === modal && modal) {
+      modal.classList.remove('show');
+      if (addAthleteForm) addAthleteForm.reset();
+    }
+  });
+
+  // Handle form submission
+  if (addAthleteForm) {
+    addAthleteForm.addEventListener('submit', function(e) {
+      e.preventDefault();
+      console.log('Form submitted!');
+      
+      const name = document.getElementById('newAthleteName').value.trim();
+      const school = document.getElementById('newAthleteSchool').value.trim();
+      const year = document.getElementById('newAthleteYear').value;
+      const mark = document.getElementById('newAthleteMark').value.trim();
+      const placeInput = document.getElementById('newAthletePlace').value;
+      const place = placeInput ? parseInt(placeInput, 10) : null;
+      
+      console.log('Form values:', { name, school, year, mark, place });
+      
+      // Validate: need name, school, and EITHER mark OR place
+      if (!name || !school) {
+        alert('Please enter athlete name and school');
+        return;
+      }
+      
+      if (!mark && !place) {
+        alert('Please enter either a mark/time OR a place');
+        return;
+      }
+      
+      const gender = coachState.gender;
+      const event = coachState.event;
+      const key = `${gender}|||${event}`;
+      
+      console.log('Adding to key:', key);
+      
+      // Initialize custom athletes array for this event if needed
+      if (!customAthletes[key]) {
+        customAthletes[key] = [];
+      }
+      
+      // Determine place: if mark is provided, we'll let it auto-rank; otherwise use provided place
+      const finalPlace = place || (customAthletes[key].length + 51);
+      const finalMark = mark || '99:99.99'; // Placeholder if no mark provided
+      
+      // Create custom athlete object
+      const customAthlete = {
+        name,
+        school,
+        year,
+        mark: finalMark,
+        place: finalPlace,
+        isCustom: true,
+        customId: `custom_${Date.now()}_${Math.random()}`  // Unique ID
+      };
+      
+      console.log('Adding athlete:', customAthlete);
+      customAthletes[key].push(customAthlete);
+      
+      // AUTO-SHIFT: If a specific place was provided, push everyone at that place or below down by 1
+      if (place) {
+        console.log('Auto-shifting athletes at place', place, 'and below...');
+        const source = athleteData[currentSeason][gender][event];
+        
+        // Shift all existing athletes at or after this place down by 1
+        source.forEach((athlete, idx) => {
+          const athleteKey = coachEditKey(currentSeason, gender, event, idx);
+          if (!coachEdits[athleteKey]) {
+            coachEdits[athleteKey] = { 
+              place: idx + 1, 
+              mark: athlete.personal_best, 
+              manualPlace: false 
+            };
+          }
+          
+          if (coachEdits[athleteKey].place >= place) {
+            coachEdits[athleteKey].place = coachEdits[athleteKey].place + 1;
+            console.log('Shifted', athlete.name || athlete.school, 'to place', coachEdits[athleteKey].place);
+          }
+        });
+        
+        // Also shift any other custom athletes at or after this place
+        customAthletes[key].forEach((ca, idx) => {
+          if (ca.customId !== customAthlete.customId && ca.place >= place) {
+            ca.place = ca.place + 1;
+            console.log('Shifted custom athlete', ca.name, 'to place', ca.place);
+          }
+        });
+      }
+      
+      console.log('Custom athletes for this event:', customAthletes[key]);
+      
+      // Close modal and reset form
+      modal.classList.remove('show');
+      addAthleteForm.reset();
+      
+      // Re-render to show the new athlete
+      console.log('Re-rendering coaches page...');
+      renderCoaches();
+    });
+  }
+});
+
+// ============================================================
+// PRINT COACH SHEET - Team Scoring Summary Table
+// ============================================================
+document.getElementById('coachPrintBtn').addEventListener('click', printCoachSheet);
+
+function printCoachSheet() {
+  const gender = coachState.gender;
+  
+  // Build complete team scoring data across all events
+  const teamData = {};  // { teamName: { eventName: { points, athleteCount }, total } }
+  const allEvents = new Set();
+  
+  // Get all events for current season and gender
+  const genderData = athleteData[currentSeason][gender];
+  Object.keys(genderData).forEach(event => {
+    allEvents.add(event);
+    const source = genderData[event];
+    
+    // Build complete athlete list for this event (TFRRS + custom)
+    let allAthletes = [];
+    
+    // Add TFRRS athletes
+    source.forEach((athlete, origIndex) => {
+      const key = coachEditKey(currentSeason, gender, event, origIndex);
+      const edit = coachEdits[key];
+      const place = edit ? edit.place : (origIndex + 1);
+      
+      allAthletes.push({
+        school: athlete.school,
+        place: place,
+        is_secondary_team: athlete.is_secondary_team === true
+      });
+    });
+    
+    // Add custom athletes
+    const customKey = `${gender}|||${event}`;
+    if (customAthletes && customAthletes[customKey]) {
+      customAthletes[customKey].forEach(customAthlete => {
+        allAthletes.push({
+          school: customAthlete.school,
+          place: customAthlete.place,
+          is_secondary_team: false
+        });
+      });
+    }
+    
+    // Sort by place
+    allAthletes.sort((a, b) => a.place - b.place);
+    
+    // Calculate points and count athletes in top 16
+    allAthletes.forEach((athlete, idx) => {
+      const school = athlete.school;
+      
+      // Initialize team data
+      if (!teamData[school]) {
+        teamData[school] = { total: 0, events: {} };
+      }
+      if (!teamData[school].events[event]) {
+        teamData[school].events[event] = { points: 0, count: 0 };
+      }
+      
+      // Count if in top 16
+      if (athlete.place <= 16) {
+        teamData[school].events[event].count++;
+      }
+      
+      // Calculate points (only if not B/C team)
+      if (!athlete.is_secondary_team) {
+        let scoringPosition = 1;
+        for (let i = 0; i < idx; i++) {
+          if (!allAthletes[i].is_secondary_team) {
+            scoringPosition++;
+          }
+        }
+        const points = SCORE_MAP[scoringPosition] || 0;
+        teamData[school].events[event].points += points;
+        teamData[school].total += points;
+      }
+    });
+  });
+  
+  // Sort teams by total points and get top 10
+  const topTeams = Object.keys(teamData)
+    .map(name => ({ name, ...teamData[name] }))
+    .sort((a, b) => b.total - a.total)
+    .slice(0, 10);
+  
+  // Sort events by category for better display
+  const eventOrder = Array.from(allEvents).sort((a, b) => {
+    const catA = EVENT_CATEGORIES[a] || 'Other';
+    const catB = EVENT_CATEGORIES[b] || 'Other';
+    if (catA !== catB) return catA.localeCompare(catB);
+    return a.localeCompare(b);
+  });
+  
+  // Create print content
+  const printWindow = document.createElement('div');
+  printWindow.id = 'print-score-table';
+  printWindow.style.cssText = 'display:none;';
+  
+  printWindow.innerHTML = `
+    <div class="print-score-content">
+      <div class="print-header">
+        <h1>Team Scoring Summary</h1>
+        <p>${gender} — ${currentSeason} Season 2025-2026</p>
+        <p class="print-date">Generated: ${new Date().toLocaleDateString('en-US', { 
+          weekday: 'long', 
+          year: 'numeric', 
+          month: 'long', 
+          day: 'numeric' 
+        })}</p>
+      </div>
+      
+      <table class="score-table">
+        <thead>
+          <tr>
+            <th class="event-col">Event</th>
+            ${topTeams.map((team, i) => `
+              <th class="team-col ${i < 3 ? 'top-' + (i + 1) : ''}">
+                <div class="team-rank">${i + 1}</div>
+                <div class="team-name">${team.name}</div>
+                <div class="team-total">${team.total} pts</div>
+              </th>
+            `).join('')}
+          </tr>
+        </thead>
+        <tbody>
+          ${eventOrder.map(event => `
+            <tr>
+              <td class="event-name">${event}</td>
+              ${topTeams.map(team => {
+                const eventData = team.events[event];
+                const points = eventData ? eventData.points : 0;
+                const count = eventData ? eventData.count : 0;
+                return `
+                  <td class="team-data ${points > 0 ? 'has-points' : ''}">
+                    ${points > 0 ? `
+                      <div class="points">${points}</div>
+                      <div class="count">${count} in top 16</div>
+                    ` : '<div class="no-score">—</div>'}
+                  </td>
+                `;
+              }).join('')}
+            </tr>
+          `).join('')}
+          <tr class="total-row">
+            <td class="total-label">TOTAL</td>
+            ${topTeams.map((team, i) => `
+              <td class="total-points ${i < 3 ? 'top-' + (i + 1) : ''}">${team.total}</td>
+            `).join('')}
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  `;
+  
+  document.body.appendChild(printWindow);
+  
+  // Print
+  window.print();
+  
+  // Cleanup
+  function cleanup() {
+    printWindow.remove();
+    window.removeEventListener('afterprint', cleanup);
+  }
+  window.addEventListener('afterprint', cleanup);
+}
+
+// ============================================================
+// INITIAL LOAD — set up all three pages
+// ============================================================
+// Make sure athleteData is loaded before initializing
+if (typeof athleteData !== 'undefined') {
+  console.log('✓ athleteData loaded successfully');
+  console.log('Initializing pages...');
+  console.log('Current season:', currentSeason);
+  console.log('Indoor Men events:', Object.keys(athleteData['Indoor']['Men'] || {}));
+  
+  populateAthleteEventDropdown();
+  console.log('Athlete event options:', elA.event.options.length);
+  
+  populateTeamEventDropdown();
+  console.log('Team event options:', elT.event.options.length);
+  
+  populateCoachEventDropdown();
+  console.log('Coach event options:', elC.event.options.length);
+  console.log('Coach event value:', elC.event.value);
+  
+  coachState.event = elC.event.value;  // default to first event
+  
+  console.log('Rendering pages...');
+  renderAthletes();
+  renderTeams();
+  renderCoaches();
+  console.log('Initialization complete!');
+  
+  // Initialize Arkansas Analytics (check if elements exist first)
+  if (document.getElementById('analyticsGender')) {
+    console.log('Initializing Arkansas Analytics...');
+    try {
+      initializeArkansasAnalytics();
+      console.log('✓ Arkansas Analytics initialized');
+    } catch (error) {
+      console.error('✗ Error initializing Arkansas Analytics:', error);
+    }
+  } else {
+    console.warn('Analytics page elements not found (page may not be visible yet)');
+  }
+  
+  // ============================================================
+  // EASTER EGG: Elite 10 Mode (Cmd+Shift+E)
+  // ============================================================
+  console.log('Setting up Elite 10 Mode easter egg...');
+  document.addEventListener('keydown', function(e) {
+    // Check for Cmd+Shift+E (Mac) or Ctrl+Shift+E (Windows)
+    // Use toLowerCase to catch both 'e' and 'E'
+    if ((e.metaKey || e.ctrlKey) && e.shiftKey && e.key.toLowerCase() === 'e') {
+      console.log('🏆 Elite 10 Mode toggle detected!');
+      e.preventDefault();
+      toggleElite10Mode();
+    }
+  });
+  
+} else {
+  console.error('✗ athleteData not loaded! Make sure sample_data.js is included.');
+  console.error('Check that sample_data.js is in the same directory as index.html');
+}
+
+// ============================================================
+// ELITE 10 MODE - Top 10 Teams Only Championship
+// ============================================================
+function toggleElite10Mode() {
+  console.log('toggleElite10Mode called, current state:', elite10Mode);
+  elite10Mode = !elite10Mode;
+  console.log('Elite 10 Mode is now:', elite10Mode ? 'ACTIVE' : 'INACTIVE');
+  
+  // Show toast notification
+  const toast = document.createElement('div');
+  toast.style.cssText = `
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: ${elite10Mode ? 'linear-gradient(135deg, #FFD700 0%, #FFA500 100%)' : '#333'};
+    color: ${elite10Mode ? '#000' : '#fff'};
+    padding: 20px 30px;
+    border-radius: 12px;
+    font-size: 1.1rem;
+    font-weight: 700;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+    z-index: 10000;
+    animation: slideIn 0.3s ease-out;
+    border: 3px solid ${elite10Mode ? '#FFD700' : '#555'};
+  `;
+  toast.innerHTML = elite10Mode 
+    ? '🏆 ELITE 10 MODE ACTIVATED<br><span style="font-size:0.85rem;font-weight:400;">Top 10 Teams Only</span>' 
+    : '📊 ELITE 10 MODE DEACTIVATED<br><span style="font-size:0.85rem;font-weight:400;">Back to Normal</span>';
+  
+  document.body.appendChild(toast);
+  
+  // Add slide-in animation
+  const style = document.createElement('style');
+  style.textContent = `
+    @keyframes slideIn {
+      from { transform: translateX(400px); opacity: 0; }
+      to { transform: translateX(0); opacity: 1; }
+    }
+  `;
+  document.head.appendChild(style);
+  
+  // Remove toast after 3 seconds
+  setTimeout(() => {
+    toast.style.animation = 'slideIn 0.3s ease-out reverse';
+    setTimeout(() => toast.remove(), 300);
+  }, 3000);
+  
+  // Update header indicator
+  updateElite10Indicator();
+  
+  // Re-render all pages with new filter
+  renderAthletes();
+  renderTeams();
+  renderCoaches();
+  
+  // Re-render analytics if on that tab
+  if (document.getElementById('analyticsGender')) {
+    renderAllAnalytics();
+  }
+}
+
+function updateElite10Indicator() {
+  const header = document.querySelector('header h1');
+  let indicator = document.getElementById('elite10Indicator');
+  
+  if (elite10Mode) {
+    if (!indicator) {
+      indicator = document.createElement('div');
+      indicator.id = 'elite10Indicator';
+      indicator.style.cssText = `
+        display: inline-block;
+        background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+        color: #000;
+        padding: 6px 16px;
+        border-radius: 20px;
+        font-size: 0.7rem;
+        font-weight: 900;
+        margin-left: 15px;
+        letter-spacing: 1px;
+        box-shadow: 0 2px 8px rgba(255,215,0,0.4);
+        border: 2px solid #FFD700;
+      `;
+      indicator.textContent = '🏆 ELITE 10';
+      header.appendChild(indicator);
+    }
+  } else {
+    if (indicator) {
+      indicator.remove();
+    }
+  }
+}
+
+// ============================================================
+// ARKANSAS ANALYTICS FEATURES
+// ============================================================
+
+// Helper function to get top 10 teams for Elite 10 mode
+function getTop10Teams(gender) {
+  const genderData = athleteData[currentSeason][gender];
+  const teamMap = {};
+  
+  // Calculate team standings
+  Object.keys(genderData).forEach(event => {
+    const eventData = genderData[event];
+    const lib = eventData[0].lower_is_better;
+    const sorted = [...eventData].sort((a, b) => {
+      const aVal = a.pb_raw || a.sb_raw;
+      const bVal = b.pb_raw || b.sb_raw;
+      return lib ? aVal - bVal : bVal - aVal;
+    });
+    
+    sorted.forEach((athlete, idx) => {
+      if (!athlete.is_secondary_team) {
+        if (!teamMap[athlete.school]) {
+          teamMap[athlete.school] = { name: athlete.school, totalPts: 0 };
+        }
+        let scoringPosition = 1;
+        for (let j = 0; j < idx; j++) {
+          if (!sorted[j].is_secondary_team) scoringPosition++;
+        }
+        const pts = SCORE_MAP[scoringPosition] || 0;
+        teamMap[athlete.school].totalPts += pts;
+      }
+    });
+  });
+  
+  return Object.values(teamMap)
+    .sort((a, b) => b.totalPts - a.totalPts)
+    .slice(0, 10)
+    .map(t => t.name);
+}
+
+// Helper function to filter event data for Elite 10 mode
+function getElite10FilteredData(genderData, gender) {
+  if (!elite10Mode) return genderData;
+  
+  const top10Teams = getTop10Teams(gender);
+  const filtered = {};
+  
+  Object.keys(genderData).forEach(event => {
+    filtered[event] = genderData[event].filter(a => top10Teams.includes(a.school));
+  });
+  
+  return filtered;
+}
+
+// Toggle collapsible sections
+function toggleAnalyticsSection(header) {
+  const content = header.nextElementSibling;
+  const icon = header.querySelector('.collapse-icon');
+  
+  if (content.style.display === 'none') {
+    content.style.display = 'block';
+    icon.classList.remove('collapsed');
+  } else {
+    content.style.display = 'none';
+    icon.classList.add('collapsed');
+  }
+}
+
+function initializeArkansasAnalytics() {
+  const analyticsGender = document.getElementById('analyticsGender');
+  const depthChartEvent = document.getElementById('depthChartEvent');
+  const depthChartChampionship = document.getElementById('depthChartChampionship');
+  
+  // Populate event dropdowns
+  populateAnalyticsEventDropdowns();
+  
+  // Initial render
+  renderAllAnalytics();
+  
+  // Event listeners
+  analyticsGender.addEventListener('change', renderAllAnalytics);
+  depthChartEvent.addEventListener('change', () => renderDepthChart());
+  depthChartChampionship.addEventListener('change', () => renderDepthChart());
+  document.getElementById('exportPdfBtn').addEventListener('click', () => exportAnalyticsPDF());
+}
+
+function populateAnalyticsEventDropdowns() {
+  const gender = document.getElementById('analyticsGender').value;
+  const genderData = athleteData[currentSeason][gender];
+  if (!genderData) return;
+  
+  const events = Object.keys(genderData).filter(ev => genderData[ev].length > 0);
+  
+  // Populate depth chart dropdown
+  const depthSelect = document.getElementById('depthChartEvent');
+  depthSelect.innerHTML = '<option value="">-- Select Event --</option>' +
+    events.map(ev => `<option value="${ev}">${ev}</option>`).join('');
+}
+
+function renderAllAnalytics() {
+  populateAnalyticsEventDropdowns();
+  renderArkansasVsField();
+  renderBubbleWatch();
+  renderPointsGap();
+  renderChampSimulator();
+}
+
+// Feature 1: Arkansas vs Field
+function renderArkansasVsField() {
+  const gender = document.getElementById('analyticsGender').value;
+  let genderData = athleteData[currentSeason][gender];
+  if (!genderData) return;
+  
+  // Apply Elite 10 filtering if mode is active
+  genderData = getElite10FilteredData(genderData, gender);
+  
+  let html = '<div style="padding:15px;">';
+  
+  const arkAthletes = [];
+  Object.keys(genderData).forEach(event => {
+    genderData[event].forEach((athlete, idx) => {
+      if (athlete.school === 'Arkansas') {
+        arkAthletes.push({
+          ...athlete,
+          event: event,
+          rank: idx + 1
+        });
+      }
+    });
+  });
+  
+  if (arkAthletes.length === 0) {
+    html += '<p style="text-align:center;color:var(--text-dim);padding:20px;">No Arkansas athletes found in current data</p>';
+  } else {
+    arkAthletes.sort((a, b) => a.rank - b.rank);
+    
+    // Grid layout for tiles
+    html += '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:15px;">';
+    
+    arkAthletes.forEach(athlete => {
+      const eventData = genderData[athlete.event];
+      
+      // Calculate SEC rank by filtering to SEC athletes only
+      const secEventData = eventData.filter(a => a.conference === 'SEC');
+      const secRank = secEventData.indexOf(secEventData.find(a => 
+        a.name === athlete.name && a.school === athlete.school
+      )) + 1;
+      
+      const nationalRank = athlete.rank;
+      const nationalPoints = SCORE_MAP[nationalRank] || 0;
+      const secPoints = SCORE_MAP[secRank] || 0;
+      
+      // Determine status based on national rank and event-specific rules
+      let qualStatus = '';
+      let statusColor = 'var(--surface)';
+      let statusEmoji = '';
+      
+      if (athlete.event === '4x400m Relay') {
+        // 4x400 Relay: #1-4 = Ideal, #5-8 = Safe, #9-12 = Bubble, #13+ = Needs Work
+        if (nationalRank <= 4) {
+          qualStatus = '🔥 IDEAL (Fast Heat)';
+          statusColor = 'rgba(255, 215, 0, 0.15)'; // Gold tint
+          statusEmoji = '🔥';
+        } else if (nationalRank <= 8) {
+          qualStatus = '✓ SAFE';
+          statusColor = 'rgba(40, 167, 69, 0.1)';
+          statusEmoji = '✓';
+        } else if (nationalRank <= 12) {
+          qualStatus = '⚠ BUBBLE';
+          statusColor = 'rgba(232, 168, 56, 0.1)';
+          statusEmoji = '⚠';
+        } else {
+          qualStatus = '❌ NEEDS WORK';
+          statusColor = 'rgba(157, 34, 53, 0.1)';
+          statusEmoji = '❌';
+        }
+      } else if (athlete.event === 'Distance Medley Relay') {
+        // DMR: #1-8 = Safe, #9-12 = Bubble, #13+ = Needs Work
+        if (nationalRank <= 8) {
+          qualStatus = '✓ SAFE';
+          statusColor = 'rgba(40, 167, 69, 0.1)';
+          statusEmoji = '✓';
+        } else if (nationalRank <= 12) {
+          qualStatus = '⚠ BUBBLE';
+          statusColor = 'rgba(232, 168, 56, 0.1)';
+          statusEmoji = '⚠';
+        } else {
+          qualStatus = '❌ NEEDS WORK';
+          statusColor = 'rgba(157, 34, 53, 0.1)';
+          statusEmoji = '❌';
+        }
+      } else {
+        // All other events: #1-12 = Safe, #13-20 = Bubble, #21+ = Needs Work
+        if (nationalRank <= 12) {
+          qualStatus = '✓ SAFE';
+          statusColor = 'rgba(40, 167, 69, 0.1)';
+          statusEmoji = '✓';
+        } else if (nationalRank <= 20) {
+          qualStatus = '⚠ BUBBLE';
+          statusColor = 'rgba(232, 168, 56, 0.1)';
+          statusEmoji = '⚠';
+        } else {
+          qualStatus = '❌ NEEDS WORK';
+          statusColor = 'rgba(157, 34, 53, 0.1)';
+          statusEmoji = '❌';
+        }
+      }
+      
+      html += `<div style="background:${statusColor};border:2px solid var(--border);border-radius:12px;padding:20px;display:flex;flex-direction:column;min-height:240px;position:relative;transition:transform 0.2s,box-shadow 0.2s;" onmouseover="this.style.transform='translateY(-4px)';this.style.boxShadow='0 4px 12px rgba(0,0,0,0.1)'" onmouseout="this.style.transform='translateY(0)';this.style.boxShadow='none'">
+        <div style="position:absolute;top:15px;right:15px;font-size:2rem;">${statusEmoji}</div>
+        <div style="font-size:0.85rem;color:var(--text-dim);margin-bottom:8px;">${athlete.event}</div>
+        <div style="font-size:1.3rem;font-weight:900;color:#9d2235;margin-bottom:4px;">${athlete.name}</div>
+        <div style="font-size:0.9rem;color:var(--text-dim);margin-bottom:12px;">${athlete.year}</div>
+        <div style="flex:1;"></div>
+        
+        <!-- National Stats -->
+        <div style="background:var(--surface2);padding:10px;border-radius:6px;margin-bottom:8px;">
+          <div style="font-size:0.7rem;color:var(--text-dim);text-align:center;margin-bottom:6px;">NATIONAL CHAMPIONSHIP</div>
+          <div style="display:flex;justify-content:space-between;align-items:center;">
+            <div>
+              <div style="font-size:0.7rem;color:var(--text-dim);">Rank</div>
+              <div style="font-size:1.3rem;font-weight:700;color:var(--accent);">#${nationalRank}</div>
+            </div>
+            <div style="text-align:center;">
+              <div style="font-size:0.7rem;color:var(--text-dim);">Mark</div>
+              <div style="font-size:1.1rem;font-weight:700;">${athlete.personal_best}</div>
+            </div>
+            <div style="text-align:right;">
+              <div style="font-size:0.7rem;color:var(--text-dim);">Points</div>
+              <div style="font-size:1.3rem;font-weight:700;color:#9d2235;">${nationalPoints}</div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- SEC Stats -->
+        <div style="background:var(--surface2);padding:10px;border-radius:6px;margin-bottom:12px;">
+          <div style="font-size:0.7rem;color:var(--text-dim);text-align:center;margin-bottom:6px;">SEC CHAMPIONSHIP</div>
+          <div style="display:flex;justify-content:space-between;align-items:center;">
+            <div>
+              <div style="font-size:0.7rem;color:var(--text-dim);">Rank</div>
+              <div style="font-size:1.3rem;font-weight:700;color:var(--accent);">#${secRank}</div>
+            </div>
+            <div style="text-align:center;">
+              <div style="font-size:0.7rem;color:var(--text-dim);">Mark</div>
+              <div style="font-size:1.1rem;font-weight:700;">${athlete.personal_best}</div>
+            </div>
+            <div style="text-align:right;">
+              <div style="font-size:0.7rem;color:var(--text-dim);">Points</div>
+              <div style="font-size:1.3rem;font-weight:700;color:#9d2235;">${secPoints}</div>
+            </div>
+          </div>
+        </div>
+        
+        <div style="text-align:center;font-weight:700;font-size:0.9rem;padding:8px;background:var(--surface);border-radius:6px;">${qualStatus}</div>
+      </div>`;
+    });
+    
+    html += '</div>'; // Close grid
+  }
+  
+  html += '</div>';
+  document.getElementById('arkVsFieldContent').innerHTML = html;
+}
+
+// Feature 2: Bubble Watch
+function renderBubbleWatch() {
+  const gender = document.getElementById('analyticsGender').value;
+  let genderData = athleteData[currentSeason][gender];
+  if (!genderData) return;
+  
+  // Apply Elite 10 filtering if mode is active
+  genderData = getElite10FilteredData(genderData, gender);
+  
+  let ideal = [];      // 4x400 only: #1-4
+  let safe = [];       // Safe to qualify
+  let bubble = [];     // On the bubble
+  let needsWork = [];  // Needs improvement
+  
+  Object.keys(genderData).forEach(event => {
+    const eventData = genderData[event];
+    
+    eventData.forEach((athlete, idx) => {
+      if (athlete.school !== 'Arkansas') return;
+      
+      const athleteRank = idx + 1;
+      let status;
+      
+      // Determine status based on rank and event-specific rules
+      if (event === '4x400m Relay') {
+        // 4x400 Relay: #1-4 = Ideal, #5-8 = Safe, #9-12 = Bubble, #13+ = Needs Work
+        if (athleteRank <= 4) {
+          status = 'ideal';
+        } else if (athleteRank <= 8) {
+          status = 'safe';
+        } else if (athleteRank <= 12) {
+          status = 'bubble';
+        } else {
+          status = 'needs';
+        }
+      } else if (event === 'Distance Medley Relay') {
+        // DMR: #1-8 = Safe, #9-12 = Bubble, #13+ = Needs Work
+        if (athleteRank <= 8) {
+          status = 'safe';
+        } else if (athleteRank <= 12) {
+          status = 'bubble';
+        } else {
+          status = 'needs';
+        }
+      } else {
+        // All other events: #1-12 = Safe, #13-20 = Bubble, #21+ = Needs Work
+        if (athleteRank <= 12) {
+          status = 'safe';
+        } else if (athleteRank <= 20) {
+          status = 'bubble';
+        } else {
+          status = 'needs';
+        }
+      }
+      
+      const item = {
+        name: athlete.name,
+        event: event,
+        mark: athlete.personal_best,
+        rank: athleteRank,
+        year: athlete.year
+      };
+      
+      if (status === 'ideal') ideal.push(item);
+      else if (status === 'safe') safe.push(item);
+      else if (status === 'bubble') bubble.push(item);
+      else if (status === 'needs') needsWork.push(item);
+    });
+  });
+  
+  let html = '<div style="padding:15px;">';
+  
+  // 4x400 Ideal (Fast Heat) - Gold
+  if (ideal.length > 0) {
+    html += '<div style="background:rgba(255,215,0,0.15);border-left:4px solid #FFD700;padding:12px;margin:10px 15px;border-radius:4px;"><h4 style="margin:0 0 10px 0;color:#B8860B;">🔥 IDEAL - Fast Heat Position (4x400 Relay only)</h4>';
+    ideal.forEach(a => {
+      html += `<div style="padding:8px 0;border-bottom:1px solid rgba(184,134,11,0.2);">
+        <strong>${a.name}</strong> - ${a.event} (Rank #${a.rank}): ${a.mark}
+        <br><span style="font-size:0.9rem;color:var(--text-dim);">${a.year} · Positioned for fast heat at nationals</span>
+      </div>`;
+    });
+    html += '</div>';
+  }
+  
+  // Safe - Green
+  if (safe.length > 0) {
+    html += '<div class="bubble-safe"><h4 style="margin:0 0 10px 0;color:#28a745;">✓ SAFE - Currently Qualifying</h4>';
+    safe.forEach(a => {
+      html += `<div style="padding:8px 0;border-bottom:1px solid rgba(40,167,69,0.2);">
+        <strong>${a.name}</strong> - ${a.event} (Rank #${a.rank}): ${a.mark}
+        <br><span style="font-size:0.9rem;color:var(--text-dim);">${a.year}</span>
+      </div>`;
+    });
+    html += '</div>';
+  }
+  
+  // Bubble - Yellow/Orange
+  if (bubble.length > 0) {
+    html += '<div class="bubble-watch"><h4 style="margin:0 0 10px 0;color:#e8a838;">⚠️ BUBBLE - Need to Improve Position</h4>';
+    bubble.forEach(a => {
+      html += `<div style="padding:8px 0;border-bottom:1px solid rgba(232,168,56,0.2);">
+        <strong>${a.name}</strong> - ${a.event} (Rank #${a.rank}): ${a.mark}
+        <br><span style="font-size:0.9rem;color:var(--text-dim);">${a.year}</span>
+      </div>`;
+    });
+    html += '</div>';
+  }
+  
+  // Needs Work - Red
+  if (needsWork.length > 0) {
+    html += '<div style="background:rgba(157,34,53,0.1);border-left:4px solid #9d2235;padding:12px;margin:10px 15px;border-radius:4px;"><h4 style="margin:0 0 10px 0;color:#9d2235;">❌ NEEDS IMPROVEMENT - Outside Qualifying Range</h4>';
+    needsWork.forEach(a => {
+      html += `<div style="padding:8px 0;border-bottom:1px solid rgba(157,34,53,0.2);">
+        <strong>${a.name}</strong> - ${a.event} (Rank #${a.rank}): ${a.mark}
+        <br><span style="font-size:0.9rem;color:var(--text-dim);">${a.year}</span>
+      </div>`;
+    });
+    html += '</div>';
+  }
+  
+  if (ideal.length === 0 && safe.length === 0 && bubble.length === 0 && needsWork.length === 0) {
+    html += '<p style="text-align:center;color:var(--text-dim);padding:20px;">No Arkansas athletes found</p>';
+  }
+  
+  html += '</div>';
+  document.getElementById('bubbleWatchContent').innerHTML = html;
+}
+
+// Feature 3: Points Gap Analysis
+function renderPointsGap() {
+  const gender = document.getElementById('analyticsGender').value;
+  const allTeams = calculateTeamStandings(gender);
+  const arkTeam = allTeams.find(t => t.name === 'Arkansas');
+  
+  if (!arkTeam) {
+    document.getElementById('pointsGapContent').innerHTML = '<p style="padding:20px;text-align:center;color:var(--text-dim);">Arkansas not found in standings</p>';
+    return;
+  }
+  
+  const arkRank = allTeams.indexOf(arkTeam) + 1;
+  const teamsAhead = allTeams.slice(0, arkRank - 1);
+  
+  let html = '<div style="padding:15px;">';
+  html += `<div style="text-align:center;margin-bottom:20px;">
+    <h4 style="margin:0;color:#9d2235;">Arkansas Current Position</h4>
+    <div style="font-size:2rem;font-weight:900;color:#9d2235;margin:10px 0;">#{arkRank}</div>
+    <div style="font-size:1.3rem;color:var(--text);">${arkTeam.totalPts} points</div>
+  </div>`;
+  
+  if (teamsAhead.length > 0) {
+    html += '<h4 style="margin:20px 0 10px 0;">Teams Ahead:</h4>';
+    teamsAhead.forEach((team, idx) => {
+      const gap = team.totalPts - arkTeam.totalPts;
+      html += `<div class="analytics-card">
+        <div style="display:flex;justify-content:space-between;align-items:center;">
+          <div>
+            <strong style="font-size:1.1rem;">#{idx + 1} ${team.name}</strong>
+            <div style="color:var(--text-dim);font-size:0.9rem;margin-top:4px;">${team.totalPts} points</div>
+          </div>
+          <div style="text-align:right;">
+            <div style="font-size:1.2rem;color:#9d2235;font-weight:700;">-${gap} pts</div>
+            <div style="font-size:0.85rem;color:var(--text-dim);">${gap <= 15 ? 'Catchable!' : 'Large gap'}</div>
+          </div>
+        </div>
+      </div>`;
+    });
+  } else {
+    html += '<div style="text-align:center;padding:30px;background:rgba(40,167,69,0.1);border-radius:8px;"><h3 style="color:#28a745;margin:0;">🏆 #1 IN THE NATION!</h3></div>';
+  }
+  
+  html += '</div>';
+  document.getElementById('pointsGapContent').innerHTML = html;
+}
+
+function calculateTeamStandings(gender) {
+  let genderData = athleteData[currentSeason][gender];
+  
+  // Apply Elite 10 filtering if mode is active
+  genderData = getElite10FilteredData(genderData, gender);
+  
+  const teamMap = {};
+  
+  Object.keys(genderData).forEach(event => {
+    genderData[event].forEach((athlete, idx) => {
+      const points = SCORE_MAP[idx + 1] || 0;
+      if (!teamMap[athlete.school]) {
+        teamMap[athlete.school] = { name: athlete.school, totalPts: 0 };
+      }
+      teamMap[athlete.school].totalPts += points;
+    });
+  });
+  
+  return Object.values(teamMap).sort((a, b) => b.totalPts - a.totalPts);
+}
+
+// Feature 5: Depth Chart
+function renderDepthChart() {
+  const event = document.getElementById('depthChartEvent').value;
+  const championship = document.getElementById('depthChartChampionship').value;
+  if (!event) return;
+  
+  const gender = document.getElementById('analyticsGender').value;
+  let genderData = athleteData[currentSeason][gender];
+  
+  // Apply Elite 10 filtering if mode is active
+  genderData = getElite10FilteredData(genderData, gender);
+  
+  const eventData = genderData[event];
+  if (!eventData) return;
+  
+  const arkAthletes = eventData.filter(a => a.school === 'Arkansas');
+  
+  let html = '';
+  
+  if (arkAthletes.length === 0) {
+    html += '<p style="text-align:center;color:var(--text-dim);padding:20px;">No Arkansas athletes in this event</p>';
+  } else {
+    const champTitle = championship === 'SEC' ? 'SEC Championship' : 'National Championship';
+    html += `<h4 style="margin-bottom:15px;">Arkansas Athletes in ${event} - ${champTitle} Rankings</h4>`;
+    
+    // For SEC Championship, filter to only SEC athletes for ranking
+    let rankingData = eventData;
+    if (championship === 'SEC') {
+      rankingData = eventData.filter(a => a.conference === 'SEC');
+    }
+    
+    arkAthletes.forEach((athlete, idx) => {
+      const nationalRank = eventData.indexOf(athlete) + 1;
+      const secRank = championship === 'SEC' ? rankingData.indexOf(athlete) + 1 : null;
+      const displayRank = championship === 'SEC' ? secRank : nationalRank;
+      const points = SCORE_MAP[displayRank] || 0;
+      
+      html += `<div class="analytics-card">
+        <div style="display:flex;justify-content:space-between;align-items:center;">
+          <div>
+            <strong style="font-size:1.1rem;color:#9d2235;">${athlete.name}</strong>
+            <div style="color:var(--text-dim);font-size:0.9rem;margin-top:4px;">
+              ${championship === 'SEC' ? `SEC Rank: #${secRank}` : `National Rank: #${nationalRank}`} · ${athlete.year}
+              ${championship === 'SEC' ? `<br><span style="font-size:0.85rem;">National Rank: #${nationalRank}</span>` : ''}
+            </div>
+          </div>
+          <div style="text-align:right;">
+            <div style="font-size:1.3rem;font-weight:700;">${athlete.personal_best}</div>
+            <div style="color:var(--accent);font-weight:700;">${points} pts</div>
+          </div>
+        </div>
+      </div>`;
+    });
+    
+    // Add summary
+    const totalPoints = arkAthletes.reduce((sum, a) => {
+      const rank = championship === 'SEC' ? rankingData.indexOf(a) + 1 : eventData.indexOf(a) + 1;
+      return sum + (SCORE_MAP[rank] || 0);
+    }, 0);
+    
+    html += `<div style="margin-top:20px;padding:15px;background:var(--surface2);border-radius:8px;text-align:center;">
+      <strong>Total Points in ${event}:</strong> <span style="font-size:1.3rem;color:#9d2235;font-weight:700;">${totalPoints}</span>
+    </div>`;
+  }
+  
+  document.getElementById('depthChartContent').innerHTML = html;
+}
+
+// Feature 6: National Championship Simulator
+function renderChampSimulator() {
+  const gender = document.getElementById('analyticsGender').value;
+  let genderData = athleteData[currentSeason][gender];
+  
+  // Apply Elite 10 filtering if mode is active
+  genderData = getElite10FilteredData(genderData, gender);
+  
+  const allTeams = calculateTeamStandings(gender);
+  const arkTeam = allTeams.find(t => t.name === 'Arkansas');
+  
+  if (!arkTeam) return;
+  
+  const arkRank = allTeams.indexOf(arkTeam) + 1;
+  
+  document.getElementById('simCurrentProjection').innerHTML = `
+    <strong>#${arkRank}</strong> with <strong>${arkTeam.totalPts} points</strong>
+  `;
+  
+  // Calculate realistic what-if scenarios based on actual Arkansas athletes
+  let scenariosHtml = '';
+  
+  // Scenario 1: All Arkansas athletes move up 1 spot
+  let moveUp1Gain = 0;
+  Object.keys(genderData).forEach(event => {
+    genderData[event].forEach((athlete, idx) => {
+      if (athlete.school === 'Arkansas' && idx > 0) {
+        const currentPts = SCORE_MAP[idx + 1] || 0;
+        const newPts = SCORE_MAP[idx] || 0;
+        moveUp1Gain += (newPts - currentPts);
+      }
+    });
+  });
+  
+  // Scenario 2: All bubble athletes qualify (move into top 16)
+  let bubbleGain = 0;
+  Object.keys(genderData).forEach(event => {
+    const eventData = genderData[event];
+    const is12QualifyEvent = event === '4x400m Relay' || event === 'Distance Medley Relay';
+    const qualifyingPosition = is12QualifyEvent ? 12 : 16;
+    const currentQualMark = eventData[qualifyingPosition - 1] ? (eventData[qualifyingPosition - 1].pb_raw || eventData[qualifyingPosition - 1].sb_raw) : null;
+    
+    if (!currentQualMark) return;
+    
+    eventData.forEach((athlete, idx) => {
+      if (athlete.school !== 'Arkansas') return;
+      const athleteRaw = athlete.pb_raw || athlete.sb_raw;
+      const rank = idx + 1;
+      
+      // If athlete is outside top 16 but close (within 1%)
+      if (rank > qualifyingPosition) {
+        let percentGap;
+        if (athlete.lower_is_better) {
+          const gap = athleteRaw - currentQualMark;
+          percentGap = (gap / currentQualMark) * 100;
+        } else {
+          const gap = currentQualMark - athleteRaw;
+          percentGap = (Math.abs(gap) / currentQualMark) * 100;
+        }
+        
+        if (percentGap <= 1.0) {
+          // Assume they could make top 16 (average ~8th place = 1 point)
+          bubbleGain += 1;
+        }
+      }
+    });
+  });
+  
+  // Scenario 3: Best case - all improvements combined
+  const bestCaseGain = moveUp1Gain + bubbleGain + Math.floor(moveUp1Gain * 0.5); // Extra optimistic boost
+  
+  const scenarios = [
+    { desc: 'All Arkansas athletes improve by 1 place', gain: moveUp1Gain },
+    { desc: 'Bubble athletes qualify for nationals', gain: bubbleGain },
+    { desc: 'Best case scenario (all improvements)', gain: bestCaseGain }
+  ];
+  
+  scenarios.forEach(s => {
+    const newTotal = arkTeam.totalPts + s.gain;
+    const newRank = allTeams.filter(t => t.totalPts > newTotal).length + 1;
+    const rankChange = arkRank - newRank;
+    scenariosHtml += `<div style="padding:12px;background:var(--surface2);border-radius:6px;margin-bottom:10px;">
+      <div style="margin-bottom:5px;font-weight:600;">${s.desc}</div>
+      <div style="font-size:1.1rem;">
+        <strong style="color:#28a745;">+${s.gain} pts</strong> → ${newTotal} total → 
+        <strong style="color:#9d2235;">#${newRank}</strong>
+        ${rankChange > 0 ? `<span style="color:#28a745;"> (↑${rankChange})</span>` : rankChange < 0 ? `<span style="color:#dc3545;"> (↓${Math.abs(rankChange)})</span>` : ''}
+      </div>
+    </div>`;
+  });
+  
+  document.getElementById('simScenarios').innerHTML = scenariosHtml;
+}
+
+// Feature 7: Export PDF
+function exportAnalyticsPDF() {
+  alert('PDF Export feature coming soon!\n\nThis will generate a comprehensive report with all Arkansas analytics including:\n- Team overview\n- Athlete breakdowns\n- Bubble watch\n- Strategic recommendations');
+}
+
+</script>
+<!-- ===== ADD ATHLETE MODAL ===== -->
+<div id="addAthleteModal" class="modal" style="display:none;">
+  <div class="modal-content">
+    <span class="modal-close" id="modalClose">&times;</span>
+    <h2>Add Custom Athlete</h2>
+    <form id="addAthleteForm">
+      <div class="form-group">
+        <label>Athlete Name*</label>
+        <input type="text" id="newAthleteName" required placeholder="e.g., John Smith">
+      </div>
+      <div class="form-group">
+        <label>School*</label>
+        <input type="text" id="newAthleteSchool" required placeholder="e.g., Oregon">
+      </div>
+      <div class="form-group">
+        <label>Year</label>
+        <select id="newAthleteYear">
+          <option value="Fr">Fr</option>
+          <option value="So">So</option>
+          <option value="Jr">Jr</option>
+          <option value="Sr" selected>Sr</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Mark/Time</label>
+        <input type="text" id="newAthleteMark" placeholder="e.g., 10.25 or 1:45.32">
+        <small>Leave blank if entering place only</small>
+      </div>
+      <div class="form-group">
+        <label>Place</label>
+        <input type="number" id="newAthletePlace" min="1" max="100" placeholder="Optional">
+        <small>Leave blank if entering mark/time only</small>
+      </div>
+      <p style="color:var(--text-dim);font-size:0.8rem;margin:10px 0;">* Enter either Mark/Time OR Place (or both)</p>
+      <div class="modal-actions">
+        <button type="button" class="btn-cancel" id="modalCancel">Cancel</button>
+        <button type="submit" class="btn-submit">Add Athlete</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+</body>
+</html>
